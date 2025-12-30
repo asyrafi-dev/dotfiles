@@ -8,7 +8,7 @@ All notable changes to this project.
 
 - Kitty terminal installer (GPU-accelerated, recommended for LazyVim)
 - Complete LazyVim requirements (tree-sitter, gcc, clipboard tools)
-- LazyGit terminal UI for Git
+- LazyGit installer from GitHub releases (latest version)
 - Python packages installer (pynvim for Neovim Python support)
 - Additional LazyVim dependencies (luarocks, imagemagick, sqlite3)
 - npm global packages (tree-sitter-cli, neovim, mermaid-cli)
@@ -17,12 +17,11 @@ All notable changes to this project.
 - Bun installer (fast JavaScript runtime and toolkit)
 - CI/CD pipeline with matrix testing for all Node.js versions
 - Enhanced rollback script (handles all dotfiles)
-- Node.js/NVM verification in verify script
-- Bun verification in verify script
-- Kitty verification in verify script
+- Comprehensive verification script (all dependencies)
 - Interactive Git user configuration
 - Smart CI mode detection (safe for users, works in GitHub Actions)
-- Comprehensive LazyVim dependency checks
+- .editorconfig for consistent coding styles
+- .gitattributes for line ending consistency
 
 ### Changed
 
@@ -31,8 +30,10 @@ All notable changes to this project.
 - Improved error handling across all scripts
 - Better backup system with manifest tracking
 - Enhanced package list with all LazyVim dependencies
-- Verification script now checks LazyVim requirements
-- Installation order optimized (Kitty first, then Neovim)
+- Verification script now checks all LazyVim requirements
+- Installation order optimized (Kitty → Neovim → Fonts → LazyGit → LazyVim → Node.js → Python → Bun)
+- Documentation improved with complete installation notes
+- CI workflow updated with comprehensive testing
 
 ### Fixed
 
@@ -45,6 +46,7 @@ All notable changes to this project.
 - tree-sitter-cli now installed via npm (not available in Ubuntu apt)
 - pynvim installed with proper --break-system-packages flag
 - All LazyVim npm packages (neovim, mermaid-cli) installed globally
+- lazygit installed from GitHub releases (not available in Ubuntu 24.04 apt)
 
 ## [1.0.0] - 2025-12-30
 

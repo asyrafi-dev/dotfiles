@@ -50,15 +50,25 @@ Automated tests run on every push and pull request:
 **Jobs:**
 1. ShellCheck Validation - Validates shell script syntax
 2. Dry Run Test - Tests installation preview
-3. Full Installation Test - Complete installation
+3. Full Installation Test - Complete installation with all tools
 4. Bats Test Suite - Automated tests
 5. Node.js Matrix - Tests all LTS versions (24, 22, 20, 18)
 6. Rollback Test - Verifies backup/rollback
 7. CI Summary - Aggregates results
 
+**Tools Tested:**
+- Kitty Terminal (GPU-accelerated)
+- Neovim with LazyVim
+- LazyGit (from GitHub releases)
+- Node.js with npm packages (tree-sitter-cli, neovim, mermaid-cli)
+- Python packages (pynvim)
+- Bun runtime
+- All system dependencies (luarocks, imagemagick, sqlite3, etc.)
+
 **Node.js Testing:**
 - Node.js 24 is default (npm updated to latest)
 - Other versions use bundled npm
+- tree-sitter-cli, neovim, mermaid-cli installed for all versions
 - All versions tested in parallel
 - fail-fast: false ensures complete testing
 

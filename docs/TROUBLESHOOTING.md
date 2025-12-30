@@ -177,6 +177,27 @@ mv ~/.config/nvim.bak.TIMESTAMP ~/.config/nvim
 
 ## Git Issues
 
+### LazyGit not found
+
+```bash
+# LazyGit installed from GitHub releases
+which lazygit
+
+# Reinstall if needed
+cd ~/dotfiles
+bash scripts/install-lazygit.sh
+```
+
+### LazyGit won't start
+
+```bash
+# Check if in git repository
+git status
+
+# If not a repo
+git init
+```
+
 ### "Please tell me who you are"
 
 ```bash

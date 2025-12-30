@@ -92,6 +92,19 @@ git undo        # Undo commit
 git aliases     # Show all
 ```
 
+### LazyGit
+
+```bash
+lazygit         # Launch in current repo
+?               # Show help
+q               # Quit
+Enter           # Confirm/Open
+Space           # Stage/Unstage
+c               # Commit
+P               # Push
+p               # Pull
+```
+
 ## Config Files
 
 ```

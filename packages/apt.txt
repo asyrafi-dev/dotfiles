@@ -25,7 +25,6 @@ python3-pip
 python3-venv
 
 # LazyVim additional requirements
-lazygit
 luarocks
 imagemagick
 sqlite3

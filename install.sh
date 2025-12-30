@@ -193,6 +193,11 @@ bash scripts/install-nerd-fonts.sh
 print_success "Nerd Fonts installed"
 
 echo
+print_info "Installing LazyGit..."
+bash scripts/install-lazygit.sh
+print_success "LazyGit installed"
+
+echo
 print_info "Setting up LazyVim..."
 bash scripts/install-lazyvim.sh
 print_success "LazyVim configured"

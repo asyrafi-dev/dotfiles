@@ -38,7 +38,12 @@ You'll also be prompted to choose a Node.js LTS version:
 - Node.js 22 LTS (Jod)
 - Node.js 24 (Latest) - Default
 
-Note: npm updated to latest for Node.js 24 only. tree-sitter-cli installed globally via npm.
+**Installation Notes:**
+- npm updated to latest for Node.js 24 only
+- tree-sitter-cli, neovim, mermaid-cli installed globally via npm
+- LazyGit installed from GitHub releases (latest version)
+- pynvim installed for Python support
+- Kitty terminal recommended for best LazyVim experience
 
 ### Using Make
 
