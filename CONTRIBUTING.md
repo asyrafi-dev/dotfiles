@@ -57,23 +57,31 @@ Before submitting:
 
 ### CI Pipeline
 
-Automated tests run on every push and pull request:
+The CI pipeline runs automatically on every push and pull request with comprehensive testing:
 
-**Jobs:**
-1. **ShellCheck Validation** - Validates shell script syntax and best practices
-2. **Dry Run Test** - Tests installation preview without making changes
-3. **Full Installation** - Complete installation test with all components
-4. **Node.js Version Matrix** - Tests all LTS versions (18, 20, 22, 24)
-5. **Bats Tests** - Runs automated test suite
-6. **Rollback Test** - Verifies backup and rollback functionality
+**🚀 Pipeline Jobs:**
 
-**Node.js Testing:**
-- Tests NVM installation
-- Verifies each LTS version installs correctly
-- Confirms npm is updated to latest for Node.js 24
-- Validates npm functionality
+1. **🔍 ShellCheck Validation** - Validates shell script syntax and best practices
+2. **🧪 Dry Run Test** - Tests installation preview without making changes  
+3. **📦 Full Installation Test** - Complete installation with all components
+4. **⚡ Bats Test Suite** - Runs automated test suite
+5. **🟢 Node.js Version Matrix** - Tests all LTS versions in parallel
+   - **Node.js 24 (Default)** ⭐ - npm updated to latest
+   - Node.js 22 - bundled npm
+   - Node.js 20 - bundled npm
+   - Node.js 18 - bundled npm
+6. **⏮️ Rollback Test** - Verifies backup and rollback functionality
+7. **📊 CI Summary** - Aggregates all test results
 
-All tests must pass before merging.
+**Node.js Testing Strategy:**
+- Matrix strategy runs all versions in parallel
+- Node.js 24 is the default and tested first
+- npm is updated to latest (v11.x+) only for Node.js 24
+- Other versions use their bundled npm
+- Each version is independently verified
+- `fail-fast: false` ensures all versions are tested
+
+All tests must pass before merging. The pipeline provides detailed output with emojis and clear formatting for easy debugging.
 
 ## Documentation
 

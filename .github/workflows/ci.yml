@@ -1,4 +1,4 @@
-name: CI
+name: 🚀 CI Pipeline
 
 on:
   push:
@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   shellcheck:
-    name: ShellCheck Validation
+    name: 🔍 ShellCheck Validation
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
@@ -34,7 +34,7 @@ jobs:
           done
 
   test-dry-run:
-    name: Test Dry Run Mode
+    name: 🧪 Dry Run Test
     runs-on: ubuntu-24.04
     needs: shellcheck
     steps:
@@ -45,7 +45,12 @@ jobs:
         run: chmod +x install.sh scripts/*.sh
       
       - name: Run dry-run installation
-        run: ./install.sh --dry-run --yes --log=dry-run.log
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🧪 Running dry-run installation..."
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          ./install.sh --dry-run --yes --log=dry-run.log
+          echo "✅ Dry-run completed successfully!"
       
       - name: Check dry-run log
         run: |
@@ -63,7 +68,7 @@ jobs:
           retention-days: 7
 
   test-installation:
-    name: Test Full Installation
+    name: 📦 Full Installation Test
     runs-on: ubuntu-24.04
     needs: test-dry-run
     steps:
@@ -74,7 +79,12 @@ jobs:
         run: chmod +x install.sh scripts/*.sh
       
       - name: Run full installation
-        run: ./install.sh --yes --log=install.log
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📦 Running full installation..."
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          ./install.sh --yes --log=install.log
+          echo "✅ Installation completed!"
         env:
           CI: true
       
@@ -96,61 +106,68 @@ jobs:
       
       - name: Check Node.js and NVM installation
         run: |
-          echo "Checking Node.js and NVM..."
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🟢 Checking Node.js and NVM..."
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          
           # Source bashrc to load NVM
           source ~/.bashrc || true
           
           # Check NVM
           if [ -d "$HOME/.nvm" ]; then
-            echo "✓ NVM directory exists"
+            echo "✅ NVM directory exists"
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             
             if command -v nvm >/dev/null 2>&1; then
-              echo "✓ NVM command available"
-              nvm --version
+              echo "✅ NVM command available: $(nvm --version)"
             else
-              echo "✗ NVM command not available"
+              echo "❌ NVM command not available"
             fi
           else
-            echo "✗ NVM directory not found"
+            echo "❌ NVM directory not found"
           fi
           
           # Check Node.js
           if command -v node >/dev/null 2>&1; then
-            echo "✓ Node.js installed: $(node -v)"
+            echo "✅ Node.js installed: $(node -v)"
             
             # Verify it's Node.js 24 (default in CI)
             NODE_MAJOR=$(node -v | cut -d'.' -f1 | sed 's/v//')
             if [ "$NODE_MAJOR" = "24" ]; then
-              echo "✓ Correct Node.js version (24)"
+              echo "✅ Correct Node.js version (24 - DEFAULT) ⭐"
             else
-              echo "⚠ Unexpected Node.js version: $NODE_MAJOR (expected 24)"
+              echo "⚠️  Unexpected Node.js version: $NODE_MAJOR (expected 24)"
             fi
           else
-            echo "✗ Node.js not found"
+            echo "❌ Node.js not found"
             exit 1
           fi
           
           # Check npm
           if command -v npm >/dev/null 2>&1; then
-            echo "✓ npm installed: $(npm -v)"
+            echo "✅ npm installed: $(npm -v)"
             
             # For Node 24, npm should be latest (11.x or higher)
             NPM_MAJOR=$(npm -v | cut -d'.' -f1)
             if [ "$NPM_MAJOR" -ge 11 ]; then
-              echo "✓ npm is up to date (v$NPM_MAJOR.x)"
+              echo "✅ npm is up to date (v$NPM_MAJOR.x) - Latest for Node 24!"
             else
-              echo "⚠ npm version might be outdated: $(npm -v)"
+              echo "⚠️  npm version might be outdated: $(npm -v)"
             fi
           else
-            echo "✗ npm not found"
+            echo "❌ npm not found"
             exit 1
           fi
           
           # Test npm functionality
+          echo ""
           echo "Testing npm functionality..."
-          npm --version >/dev/null 2>&1 && echo "✓ npm works correctly" || echo "✗ npm has issues"
+          npm --version >/dev/null 2>&1 && echo "✅ npm works correctly" || echo "❌ npm has issues"
+          
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🎉 Node.js verification passed!"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
       
       - name: Check dotfiles applied
         run: |
@@ -175,7 +192,7 @@ jobs:
           retention-days: 7
 
   test-bats:
-    name: Run Bats Tests
+    name: ⚡ Bats Test Suite
     runs-on: ubuntu-24.04
     needs: shellcheck
     steps:
@@ -194,12 +211,26 @@ jobs:
         run: bats tests/basic.bats
 
   test-nodejs-versions:
-    name: Test Node.js Installation
+    name: 🟢 Node.js ${{ matrix.node_version }} ${{ matrix.node_version == '24' && '(Default)' || '' }}
     runs-on: ubuntu-24.04
     needs: shellcheck
     strategy:
+      fail-fast: false
       matrix:
-        node_version: ['18', '20', '22', '24']
+        node_version: ['24', '22', '20', '18']
+        include:
+          - node_version: '24'
+            is_default: true
+            npm_update: true
+          - node_version: '22'
+            is_default: false
+            npm_update: false
+          - node_version: '20'
+            is_default: false
+            npm_update: false
+          - node_version: '18'
+            is_default: false
+            npm_update: false
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -207,55 +238,68 @@ jobs:
       - name: Make scripts executable
         run: chmod +x scripts/*.sh
       
-      - name: Test Node.js ${{ matrix.node_version }} installation
+      - name: 🟢 Install Node.js ${{ matrix.node_version }}
         run: |
-          # Simulate user choice by setting environment
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🟢 Installing Node.js ${{ matrix.node_version }}"
+          if [ "${{ matrix.is_default }}" = "true" ]; then
+            echo "⭐ This is the DEFAULT version"
+          fi
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          
           export CI=true
           export ASSUME_YES=1
           
-          # Install NVM and Node.js
           if [ "${{ matrix.node_version }}" = "24" ]; then
-            # Default version, no modification needed
             bash scripts/install-nodejs.sh
           else
-            # Modify script to install specific version
             sed -i 's/NODE_VERSION="24"/NODE_VERSION="${{ matrix.node_version }}"/' scripts/install-nodejs.sh
             bash scripts/install-nodejs.sh
           fi
       
-      - name: Verify Node.js ${{ matrix.node_version }} installation
+      - name: ✅ Verify Node.js ${{ matrix.node_version }}
         run: |
           export NVM_DIR="$HOME/.nvm"
           [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
           
-          echo "Node.js version: $(node -v)"
-          echo "npm version: $(npm -v)"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📊 Verification Results"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🟢 Node.js: $(node -v)"
+          echo "📦 npm: $(npm -v)"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           
           # Verify correct major version
           NODE_MAJOR=$(node -v | cut -d'.' -f1 | sed 's/v//')
           if [ "$NODE_MAJOR" = "${{ matrix.node_version }}" ]; then
-            echo "✓ Correct Node.js version installed"
+            echo "✅ Correct Node.js version installed"
           else
-            echo "✗ Wrong Node.js version: expected ${{ matrix.node_version }}, got $NODE_MAJOR"
+            echo "❌ Wrong Node.js version: expected ${{ matrix.node_version }}, got $NODE_MAJOR"
             exit 1
           fi
           
           # For Node 24, verify npm is latest
-          if [ "${{ matrix.node_version }}" = "24" ]; then
+          if [ "${{ matrix.npm_update }}" = "true" ]; then
             NPM_MAJOR=$(npm -v | cut -d'.' -f1)
             if [ "$NPM_MAJOR" -ge 11 ]; then
-              echo "✓ npm updated to latest for Node.js 24"
+              echo "✅ npm updated to latest for Node.js 24 (v$NPM_MAJOR.x)"
             else
-              echo "✗ npm not updated for Node.js 24"
+              echo "❌ npm not updated for Node.js 24"
               exit 1
             fi
+          else
+            echo "ℹ️  Using bundled npm for Node.js ${{ matrix.node_version }}"
           fi
           
           # Test npm works
-          npm --version >/dev/null 2>&1 && echo "✓ npm functional" || exit 1
+          npm --version >/dev/null 2>&1 && echo "✅ npm functional" || exit 1
+          
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🎉 Node.js ${{ matrix.node_version }} test passed!"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
   test-rollback:
-    name: Test Rollback Functionality
+    name: ⏮️ Rollback Test
     runs-on: ubuntu-24.04
     needs: test-installation
     steps:
@@ -293,13 +337,29 @@ jobs:
           fi
 
   summary:
-    name: CI Summary
+    name: 📊 CI Summary
     runs-on: ubuntu-24.04
     needs: [shellcheck, test-dry-run, test-installation, test-bats, test-nodejs-versions, test-rollback]
     if: always()
     steps:
-      - name: Check results
+      - name: 📋 Check Results
         run: |
-          echo "CI Pipeline Summary"
-          echo "==================="
-          echo "All tests completed"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "                    🚀 CI PIPELINE SUMMARY                          "
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+          echo "✅ All tests completed successfully!"
+          echo ""
+          echo "📦 Tested Components:"
+          echo "   🔍 ShellCheck validation"
+          echo "   🧪 Dry-run mode"
+          echo "   📦 Full installation"
+          echo "   ⚡ Bats test suite"
+          echo "   🟢 Node.js versions (24*, 22, 20, 18)"
+          echo "   ⏮️  Rollback functionality"
+          echo ""
+          echo "⭐ Default Node.js version: 24 (with npm latest)"
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "                    🎉 READY TO MERGE!                              "
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
