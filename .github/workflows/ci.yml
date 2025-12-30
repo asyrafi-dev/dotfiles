@@ -94,12 +94,77 @@ jobs:
           command -v fd && fd --version || echo "fd not found"
           command -v git && git --version || echo "Git not found"
       
+      - name: Check Node.js and NVM installation
+        run: |
+          echo "Checking Node.js and NVM..."
+          # Source bashrc to load NVM
+          source ~/.bashrc || true
+          
+          # Check NVM
+          if [ -d "$HOME/.nvm" ]; then
+            echo "✓ NVM directory exists"
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            
+            if command -v nvm >/dev/null 2>&1; then
+              echo "✓ NVM command available"
+              nvm --version
+            else
+              echo "✗ NVM command not available"
+            fi
+          else
+            echo "✗ NVM directory not found"
+          fi
+          
+          # Check Node.js
+          if command -v node >/dev/null 2>&1; then
+            echo "✓ Node.js installed: $(node -v)"
+            
+            # Verify it's Node.js 24 (default in CI)
+            NODE_MAJOR=$(node -v | cut -d'.' -f1 | sed 's/v//')
+            if [ "$NODE_MAJOR" = "24" ]; then
+              echo "✓ Correct Node.js version (24)"
+            else
+              echo "⚠ Unexpected Node.js version: $NODE_MAJOR (expected 24)"
+            fi
+          else
+            echo "✗ Node.js not found"
+            exit 1
+          fi
+          
+          # Check npm
+          if command -v npm >/dev/null 2>&1; then
+            echo "✓ npm installed: $(npm -v)"
+            
+            # For Node 24, npm should be latest (11.x or higher)
+            NPM_MAJOR=$(npm -v | cut -d'.' -f1)
+            if [ "$NPM_MAJOR" -ge 11 ]; then
+              echo "✓ npm is up to date (v$NPM_MAJOR.x)"
+            else
+              echo "⚠ npm version might be outdated: $(npm -v)"
+            fi
+          else
+            echo "✗ npm not found"
+            exit 1
+          fi
+          
+          # Test npm functionality
+          echo "Testing npm functionality..."
+          npm --version >/dev/null 2>&1 && echo "✓ npm works correctly" || echo "✗ npm has issues"
+      
       - name: Check dotfiles applied
         run: |
           echo "Checking dotfiles..."
           [ -f ~/.bashrc ] && echo "✓ .bashrc exists" || echo "✗ .bashrc missing"
           [ -f ~/.gitconfig ] && echo "✓ .gitconfig exists" || echo "✗ .gitconfig missing"
           [ -f ~/.tmux.conf ] && echo "✓ .tmux.conf exists" || echo "✗ .tmux.conf missing"
+          
+          # Check if .bashrc contains NVM configuration
+          if grep -q "NVM_DIR" ~/.bashrc; then
+            echo "✓ .bashrc contains NVM configuration"
+          else
+            echo "⚠ .bashrc missing NVM configuration"
+          fi
       
       - name: Upload installation log
         if: always()
@@ -127,6 +192,67 @@ jobs:
       
       - name: Run bats tests
         run: bats tests/basic.bats
+
+  test-nodejs-versions:
+    name: Test Node.js Installation
+    runs-on: ubuntu-24.04
+    needs: shellcheck
+    strategy:
+      matrix:
+        node_version: ['18', '20', '22', '24']
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Make scripts executable
+        run: chmod +x scripts/*.sh
+      
+      - name: Test Node.js ${{ matrix.node_version }} installation
+        run: |
+          # Simulate user choice by setting environment
+          export CI=true
+          export ASSUME_YES=1
+          
+          # Install NVM and Node.js
+          if [ "${{ matrix.node_version }}" = "24" ]; then
+            # Default version, no modification needed
+            bash scripts/install-nodejs.sh
+          else
+            # Modify script to install specific version
+            sed -i 's/NODE_VERSION="24"/NODE_VERSION="${{ matrix.node_version }}"/' scripts/install-nodejs.sh
+            bash scripts/install-nodejs.sh
+          fi
+      
+      - name: Verify Node.js ${{ matrix.node_version }} installation
+        run: |
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          
+          echo "Node.js version: $(node -v)"
+          echo "npm version: $(npm -v)"
+          
+          # Verify correct major version
+          NODE_MAJOR=$(node -v | cut -d'.' -f1 | sed 's/v//')
+          if [ "$NODE_MAJOR" = "${{ matrix.node_version }}" ]; then
+            echo "✓ Correct Node.js version installed"
+          else
+            echo "✗ Wrong Node.js version: expected ${{ matrix.node_version }}, got $NODE_MAJOR"
+            exit 1
+          fi
+          
+          # For Node 24, verify npm is latest
+          if [ "${{ matrix.node_version }}" = "24" ]; then
+            NPM_MAJOR=$(npm -v | cut -d'.' -f1)
+            if [ "$NPM_MAJOR" -ge 11 ]; then
+              echo "✓ npm updated to latest for Node.js 24"
+            else
+              echo "✗ npm not updated for Node.js 24"
+              exit 1
+            fi
+          fi
+          
+          # Test npm works
+          npm --version >/dev/null 2>&1 && echo "✓ npm functional" || exit 1
 
   test-rollback:
     name: Test Rollback Functionality
@@ -169,7 +295,7 @@ jobs:
   summary:
     name: CI Summary
     runs-on: ubuntu-24.04
-    needs: [shellcheck, test-dry-run, test-installation, test-bats, test-rollback]
+    needs: [shellcheck, test-dry-run, test-installation, test-bats, test-nodejs-versions, test-rollback]
     if: always()
     steps:
       - name: Check results

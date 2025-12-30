@@ -57,15 +57,23 @@ Before submitting:
 
 ### CI Pipeline
 
-Automated tests run on:
+Automated tests run on every push and pull request:
 
-- ShellCheck validation
-- Dry-run test
-- Full installation
-- Bats tests
-- Rollback test
+**Jobs:**
+1. **ShellCheck Validation** - Validates shell script syntax and best practices
+2. **Dry Run Test** - Tests installation preview without making changes
+3. **Full Installation** - Complete installation test with all components
+4. **Node.js Version Matrix** - Tests all LTS versions (18, 20, 22, 24)
+5. **Bats Tests** - Runs automated test suite
+6. **Rollback Test** - Verifies backup and rollback functionality
 
-CI runs on push and pull requests.
+**Node.js Testing:**
+- Tests NVM installation
+- Verifies each LTS version installs correctly
+- Confirms npm is updated to latest for Node.js 24
+- Validates npm functionality
+
+All tests must pass before merging.
 
 ## Documentation
 
