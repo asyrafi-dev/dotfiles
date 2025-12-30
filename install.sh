@@ -24,7 +24,7 @@ echo "[+] Performing post-installation setup..."
 # Link fd-find to fd if it exists
 if command -v fdfind &> /dev/null; then
     echo "  -> Linking 'fdfind' to 'fd'..."
-    sudo ln -sf $(which fdfind) /usr/local/bin/fd
+    sudo ln -sf "$(which fdfind)" /usr/local/bin/fd
 fi
 
 # Run individual component installers
@@ -36,7 +36,7 @@ bash scripts/install-lazyvim.sh
 echo "  -> Applying configuration files with Stow..."
 # Remove potentially conflicting files before stowing
 rm -f ~/.bashrc
-(cd home && stow -t ~ --no-folding *)
+(cd home && stow -t ~ --no-folding ./*)
 
 # --- Final Instructions ---
 echo
