@@ -122,7 +122,7 @@ if [ "$DRY_RUN" -eq 1 ]; then
   if command -v stow >/dev/null 2>&1; then
     echo "Running stow preview (dry-run), output saved to stow-preview.txt"
     set +e
-    (cd home && stow -n -t ~ --no-folding -- *) > stow-preview.txt 2>&1
+    (cd home && stow -n -t ~ --no-folding --adopt -- *) > stow-preview.txt 2>&1
     stow_status=$?
     set -e
     if [ $stow_status -ne 0 ]; then
@@ -195,16 +195,16 @@ else
 
   # show what will be done
   echo "Preview of stow actions:"
-  (cd home && stow -n -t ~ --no-folding -- *)
+  (cd home && stow -n -t ~ --no-folding --adopt -- *)
   if [ "${ASSUME_YES:-0}" -eq 1 ] || [ -n "${CI:-}" ]; then
     echo "Applying stow changes non-interactively."
-    (cd home && stow -t ~ --no-folding -- *)
+    (cd home && stow -t ~ --no-folding --adopt -- *)
   else
     read -rp "Apply these changes? [y/N] " stow_confirm
     if [[ ! $stow_confirm =~ ^[Yy]$ ]]; then
       echo "Skipping stow. You can run 'stow -t ~ --no-folding -- *' manually."
     else
-      (cd home && stow -t ~ --no-folding -- *)
+      (cd home && stow -t ~ --no-folding --adopt -- *)
     fi
   fi
 fi
