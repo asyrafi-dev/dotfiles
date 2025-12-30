@@ -45,7 +45,7 @@ jobs:
           if [ -z "$files" ]; then
             echo "No shell scripts to lint"
           else
-            shellcheck -x -S all $files
+            shellcheck -x $files
           fi
 
       - name: Run shfmt (format check)
