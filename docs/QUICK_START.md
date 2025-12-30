@@ -187,6 +187,8 @@ sudo systemctl status mariadb  # Check service
 sudo mariadb-secure-installation  # Secure setup
 ```
 
+Note: MariaDB uses Indonesia mirror (Nevacloud) with fallback to official repository.
+
 ### Add System Packages
 
 ```bash

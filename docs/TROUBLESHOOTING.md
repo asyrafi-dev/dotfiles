@@ -375,6 +375,17 @@ sudo kill <PID>
 sudo systemctl restart mariadb
 ```
 
+### Repository issues
+
+```bash
+# Remove old repository
+sudo rm /etc/apt/sources.list.d/mariadb.list
+
+# Reinstall (will auto-detect best mirror)
+cd ~/dotfiles
+bash scripts/install-mariadb.sh
+```
+
 ### "Please tell me who you are"
 
 ```bash

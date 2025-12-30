@@ -6,9 +6,9 @@ ASSUME_YES=${ASSUME_YES:-0}
 DRY_RUN=${DRY_RUN:-0}
 CI=${CI:-}
 
-MARIADB_VERSION="12.3"
+MARIADB_VERSION="11.4"
 
-echo "[mariadb] Installing MariaDB $MARIADB_VERSION"
+echo "[mariadb] Installing MariaDB $MARIADB_VERSION LTS"
 
 # Check if MariaDB already installed
 if command -v mariadb >/dev/null 2>&1; then
@@ -37,23 +37,36 @@ fi
 # Install prerequisites
 echo "Installing prerequisites..."
 sudo apt-get update
-sudo apt-get install -y apt-transport-https curl
+sudo apt-get install -y apt-transport-https curl software-properties-common
 
 # Add MariaDB repository
 echo "Adding MariaDB repository..."
 sudo mkdir -p /etc/apt/keyrings
 
-# Download signing key
+# Download signing key from official source
 echo "Downloading MariaDB signing key..."
-sudo curl -fsSL https://mariadb.org/mariadb_release_signing_key.pgp -o /etc/apt/keyrings/mariadb-keyring.pgp
+sudo curl -fsSL https://mariadb.org/mariadb_release_signing_key.pgp | sudo gpg --dearmor -o /etc/apt/keyrings/mariadb-keyring.gpg 2>/dev/null || true
 
-# Add repository
-echo "deb [signed-by=/etc/apt/keyrings/mariadb-keyring.pgp] https://mirror.nevacloud.com/mariadb/repo/$MARIADB_VERSION/ubuntu noble main" | sudo tee /etc/apt/sources.list.d/mariadb.list > /dev/null
+# Use Indonesia mirror (Nevacloud) with fallback to official
+# Nevacloud is official MariaDB mirror in Indonesia
+MIRROR_URL="https://mirror.nevacloud.com/mariadb/repo/$MARIADB_VERSION/ubuntu"
+FALLBACK_URL="https://deb.mariadb.org/$MARIADB_VERSION/ubuntu"
+
+echo "Testing mirror availability..."
+if curl -fsSL --connect-timeout 5 "$MIRROR_URL/dists/noble/Release" >/dev/null 2>&1; then
+  echo "Using Indonesia mirror (Nevacloud)..."
+  REPO_URL="$MIRROR_URL"
+else
+  echo "Indonesia mirror not available, using official MariaDB repository..."
+  REPO_URL="$FALLBACK_URL"
+fi
+
+echo "deb [signed-by=/etc/apt/keyrings/mariadb-keyring.gpg] $REPO_URL noble main" | sudo tee /etc/apt/sources.list.d/mariadb.list > /dev/null
 
 # Update and install
 echo "Installing MariaDB server..."
 sudo apt-get update
-sudo apt-get install -y mariadb-server
+sudo apt-get install -y mariadb-server mariadb-client
 
 # Enable and start service (skip in CI)
 if [ -z "${CI:-}" ]; then

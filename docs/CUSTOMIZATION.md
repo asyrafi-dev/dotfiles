@@ -538,6 +538,10 @@ Restart after changes:
 sudo systemctl restart mariadb
 ```
 
+### Mirror Configuration
+
+MariaDB installer automatically uses Indonesia mirror (Nevacloud) for faster downloads in Indonesia, with fallback to official MariaDB repository if unavailable.
+
 ## Fonts
 
 ### Change Terminal Font

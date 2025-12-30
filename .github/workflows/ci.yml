@@ -251,6 +251,27 @@ jobs:
             echo "⚠ .bashrc missing NVM configuration"
           fi
       
+      - name: Check MariaDB installation
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🐬 Checking MariaDB..."
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          
+          if command -v mariadb >/dev/null 2>&1; then
+            MARIADB_VERSION=$(mariadb --version | awk '{print $5}' | cut -d'-' -f1)
+            echo "✅ MariaDB installed: v$MARIADB_VERSION"
+          else
+            echo "⚠️ MariaDB not found (service may not start in CI)"
+          fi
+          
+          # Check if repository was added
+          if [ -f /etc/apt/sources.list.d/mariadb.list ]; then
+            echo "✅ MariaDB repository configured"
+            cat /etc/apt/sources.list.d/mariadb.list
+          fi
+          
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+      
       - name: Upload installation log
         if: always()
         uses: actions/upload-artifact@v4
@@ -432,7 +453,7 @@ jobs:
           echo "   🥟 Bun runtime"
           echo "   🐘 PHP 8.4 with Composer"
           echo "   🦭 Podman with kubectl (containers & K8s)"
-          echo "   🐬 MariaDB 12.3 (database server)"
+          echo "   🐬 MariaDB 11.4 LTS (database server)"
           echo "   🐱 Kitty terminal"
           echo "   🐙 LazyGit (from GitHub)"
           echo "   🐍 Python packages (pynvim)"
@@ -442,7 +463,7 @@ jobs:
           echo "🥟 Bun: Latest stable version"
           echo "🐘 PHP: 8.4 with common extensions"
           echo "🦭 Podman: Rootless container runtime"
-          echo "🐬 MariaDB: 12.3 database server"
+          echo "🐬 MariaDB: 11.4 LTS database server"
           echo "🐱 Kitty: Recommended terminal for LazyVim"
           echo "🐙 LazyGit: Latest from GitHub releases"
           echo ""

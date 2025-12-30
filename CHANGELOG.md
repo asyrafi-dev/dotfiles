@@ -14,7 +14,7 @@ All notable changes to this project.
 - PHP 8.4 installer with Composer and common extensions
 - Podman installer (rootless container runtime with podman-compose)
 - kubectl installer with checksum verification and autocompletion
-- MariaDB 12.3 installer from official repository
+- MariaDB 11.4 LTS installer with Indonesia mirror (Nevacloud) and fallback
 - Additional LazyVim dependencies (luarocks, imagemagick, sqlite3)
 - npm global packages (tree-sitter-cli, neovim, mermaid-cli)
 - Bun PATH configuration in dotfiles bashrc
@@ -79,7 +79,7 @@ Initial release.
 - PHP 8.4 with Composer
 - Podman (rootless containers)
 - kubectl (Kubernetes CLI)
-- MariaDB 12.3 (database server)
+- MariaDB 11.4 LTS (database server)
 - Git with 30+ aliases
 - LazyGit terminal UI
 - Tmux with vi-mode and mouse support

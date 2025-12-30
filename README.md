@@ -15,7 +15,7 @@ My personal dotfiles for Ubuntu 24.04 LTS. One command to set up everything.
 - **PHP 8.4** with Composer and common extensions
 - **Podman** - Rootless container runtime (Docker alternative)
 - **kubectl** - Kubernetes CLI for cluster management
-- **MariaDB 12.3** - MySQL-compatible database server
+- **MariaDB 11.4 LTS** - MySQL-compatible database server
 - **Python packages** - pynvim for Neovim Python support
 - **Git** with useful aliases
 - **Tmux** with vi-mode and mouse support
@@ -48,6 +48,7 @@ You'll also be prompted to choose a Node.js LTS version:
 - LazyGit installed from GitHub releases (latest version)
 - pynvim installed for Python support
 - Kitty terminal recommended for best LazyVim experience
+- MariaDB uses Indonesia mirror (Nevacloud) with fallback to official repository
 
 ### Using Make
 
