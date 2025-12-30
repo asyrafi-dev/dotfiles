@@ -169,6 +169,59 @@ jobs:
           echo "🎉 Node.js verification passed!"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
       
+      - name: Check Bun installation
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🥟 Checking Bun..."
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          
+          # Source bashrc to load Bun
+          source ~/.bashrc || true
+          
+          # Check Bun directory
+          if [ -d "$HOME/.bun" ]; then
+            echo "✅ Bun directory exists"
+            export BUN_INSTALL="$HOME/.bun"
+            export PATH="$BUN_INSTALL/bin:$PATH"
+          else
+            echo "❌ Bun directory not found"
+            exit 1
+          fi
+          
+          # Check Bun command
+          if command -v bun >/dev/null 2>&1; then
+            BUN_VERSION=$(bun --version)
+            echo "✅ Bun installed: v$BUN_VERSION"
+          else
+            echo "❌ Bun command not available"
+            exit 1
+          fi
+          
+          # Test Bun functionality
+          echo ""
+          echo "Testing Bun functionality..."
+          
+          # Test 1: Version check
+          bun --version >/dev/null 2>&1 && echo "✅ Bun version command works" || exit 1
+          
+          # Test 2: Execute JavaScript
+          echo "console.log('Hello from Bun!');" > /tmp/test-bun.js
+          if bun run /tmp/test-bun.js 2>&1 | grep -q "Hello from Bun"; then
+            echo "✅ Bun can execute JavaScript"
+          else
+            echo "❌ Bun failed to execute JavaScript"
+            exit 1
+          fi
+          rm -f /tmp/test-bun.js
+          
+          # Test 3: Check bun help
+          bun --help >/dev/null 2>&1 && echo "✅ Bun help command works" || exit 1
+          
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🎉 Bun verification passed!"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+      
       - name: Check dotfiles applied
         run: |
           echo "Checking dotfiles..."
@@ -361,9 +414,11 @@ jobs:
           echo "   📦 Full installation"
           echo "   ⚡ Bats test suite"
           echo "   🟢 Node.js versions (24*, 22, 20, 18)"
+          echo "   🥟 Bun runtime"
           echo "   ⏮️  Rollback functionality"
           echo ""
           echo "⭐ Default Node.js version: 24 (with npm latest)"
+          echo "🥟 Bun: Latest stable version"
           echo ""
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo "                    🎉 READY TO MERGE!                              "
