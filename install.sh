@@ -36,7 +36,7 @@ bash scripts/install-lazyvim.sh
 echo "  -> Applying configuration files with Stow..."
 # Remove potentially conflicting files before stowing
 rm -f ~/.bashrc
-(cd home && stow -t ~ --no-folding ./*)
+(cd home && stow -t ~ --no-folding *)
 
 # --- Final Instructions ---
 echo
