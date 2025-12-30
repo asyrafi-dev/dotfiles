@@ -1,6 +1,6 @@
 # Dotfiles for Ubuntu 24.04 LTS
 
-[![CI](https://github.com/YOUR_USERNAME/dotfiles/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/dotfiles/actions/workflows/ci.yml)
+[![CI](https://github.com/asyrafi-dev/dotfiles/actions/workflows/ci.yml/badge.svg)](https://github.com/asyrafi-dev/dotfiles/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Ubuntu](https://img.shields.io/badge/Ubuntu-24.04%20LTS-orange.svg)](https://ubuntu.com/)
 [![Shell](https://img.shields.io/badge/Shell-Bash-green.svg)](https://www.gnu.org/software/bash/)
@@ -72,6 +72,7 @@ bash scripts/setup-git-user.sh
 ```
 
 Or manually:
+
 ```bash
 git config --global user.name "Your Name"
 git config --global user.email "your.email@example.com"
@@ -80,6 +81,7 @@ git config --global user.email "your.email@example.com"
 ### Add/Remove Packages
 
 Edit `packages/apt.txt` and re-run installer:
+
 ```bash
 nano packages/apt.txt
 ./install.sh
@@ -88,6 +90,7 @@ nano packages/apt.txt
 ### Customize Dotfiles
 
 All configurations are symlinked to your home directory:
+
 - `~/.bashrc` - Bash configuration
 - `~/.gitconfig` - Git configuration
 - `~/.tmux.conf` - Tmux configuration
@@ -98,17 +101,20 @@ Edit these files directly to customize.
 ## Keybindings
 
 ### Tmux
+
 - `Ctrl+b |` - Split vertical
 - `Ctrl+b -` - Split horizontal
 - `Alt+Arrow` - Navigate panes
 - `Ctrl+b r` - Reload config
 
 ### FZF
+
 - `Ctrl+T` - Find files
 - `Ctrl+R` - Search history
 - `Alt+C` - Change directory
 
 ### Bash Aliases
+
 ```bash
 ll              # List all files
 gs              # Git status
@@ -120,6 +126,7 @@ vim             # Neovim
 ```
 
 ### Git Aliases
+
 ```bash
 git st          # Status
 git s           # Short status
@@ -136,11 +143,13 @@ git aliases     # Show all aliases
 ## Backup and Rollback
 
 Files are automatically backed up before changes:
+
 ```bash
 ~/.dotfiles_backups_<timestamp>.txt
 ```
 
 Restore previous configuration:
+
 ```bash
 ./scripts/rollback.sh
 ```
@@ -193,12 +202,14 @@ See [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) for more solutions.
 ### Add Bash Aliases
 
 Edit `~/.bashrc`:
+
 ```bash
 alias update='sudo apt update && sudo apt upgrade -y'
 alias myproject='cd ~/projects/myproject'
 ```
 
 Reload:
+
 ```bash
 source ~/.bashrc
 ```
@@ -206,6 +217,7 @@ source ~/.bashrc
 ### Add Git Aliases
 
 Edit `~/.gitconfig`:
+
 ```ini
 [alias]
   pushf = push --force-with-lease
@@ -215,6 +227,7 @@ Edit `~/.gitconfig`:
 ### Change Tmux Prefix
 
 Edit `~/.tmux.conf`:
+
 ```bash
 unbind C-b
 set -g prefix C-a
@@ -222,6 +235,7 @@ bind C-a send-prefix
 ```
 
 Reload:
+
 ```bash
 tmux source-file ~/.tmux.conf
 ```
@@ -229,6 +243,7 @@ tmux source-file ~/.tmux.conf
 ### Add Neovim Plugins
 
 Create `~/.config/nvim/lua/plugins/custom.lua`:
+
 ```lua
 return {
   { "folke/tokyonight.nvim" },
@@ -286,6 +301,7 @@ make clean
 ## Contributing
 
 Contributions are welcome. Please ensure:
+
 - Scripts pass ShellCheck validation
 - Changes are tested on Ubuntu 24.04 LTS
 - Documentation is updated accordingly
