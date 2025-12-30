@@ -9,6 +9,7 @@ My personal dotfiles for Ubuntu 24.04 LTS. One command to set up everything.
 ## What's Included
 
 - **Neovim v0.11.5** with LazyVim
+- **Node.js LTS** via NVM (choose 18/20/22/24)
 - **Git** with useful aliases
 - **Tmux** with vi-mode and mouse support
 - **FZF, Ripgrep, fd-find** for fast searching
@@ -25,6 +26,14 @@ chmod +x install.sh scripts/*.sh
 ```
 
 The installer will ask for your Git name and email during setup.
+
+You'll also be prompted to choose a Node.js LTS version:
+- Node.js 18 LTS (Hydrogen)
+- Node.js 20 LTS (Iron)
+- Node.js 22 LTS (Jod)
+- Node.js 24 (Latest) - Default, npm updated to latest
+
+Note: npm is updated to latest only for Node.js 24. Other versions use the bundled npm.
 
 ### Using Make
 
@@ -63,11 +72,32 @@ nano packages/apt.txt
 ### Edit Dotfiles
 
 All configs are in your home directory:
-
-- `~/.bashrc` - Bash
+- `~/.bashrc` - Bash (includes NVM)
 - `~/.gitconfig` - Git
 - `~/.tmux.conf` - Tmux
 - `~/.config/nvim/` - Neovim
+
+### Node.js Management
+
+```bash
+# Install different Node version
+nvm install 18          # Install Node 18 LTS
+nvm install 20          # Install Node 20 LTS
+nvm install 22          # Install Node 22 LTS
+nvm use 20              # Switch to Node 20
+
+# List installed versions
+nvm ls
+
+# Set default version
+nvm alias default 20
+
+# Update npm (optional, only if needed)
+npm install -g npm@latest
+
+# Install global packages
+npm install -g yarn pnpm typescript eslint prettier
+```
 
 ## Keybindings
 
@@ -89,7 +119,6 @@ Alt+C           Change directory
 ```
 
 ### Bash Aliases
-
 ```bash
 ll              # List all files
 gs              # Git status
@@ -98,6 +127,8 @@ gc              # Git commit
 gp              # Git push
 gl              # Git log graph
 vim             # Opens Neovim
+node            # Node.js REPL
+npm             # Node package manager
 ```
 
 ### Git Aliases

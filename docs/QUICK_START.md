@@ -12,8 +12,10 @@ chmod +x install.sh scripts/*.sh
 ## After Install
 
 ```bash
-source ~/.bashrc                    # Reload terminal
+source ~/.bashrc                    # Reload terminal (loads NVM)
 nvim                                # Setup plugins
+node -v                             # Verify Node.js
+npm -v                              # Verify npm
 bash scripts/setup-git-user.sh      # Configure Git if skipped
 ```
 
@@ -49,7 +51,6 @@ Alt+C           Change directory
 ```
 
 ### Bash
-
 ```bash
 ll              # List all
 gs              # Git status
@@ -58,6 +59,8 @@ gc              # Git commit
 gp              # Git push
 gl              # Git log
 vim             # Neovim
+node            # Node.js
+npm             # npm
 ```
 
 ### Git
@@ -76,15 +79,30 @@ git aliases     # Show all
 ## Config Files
 
 ```
-~/.bashrc           Bash
+~/.bashrc           Bash (includes NVM)
 ~/.gitconfig        Git
 ~/.tmux.conf        Tmux
 ~/.config/nvim/     Neovim
+~/.nvm/             Node Version Manager
 ```
 
 ## Common Tasks
 
 ### Configure Git
+```bash
+bash scripts/setup-git-user.sh
+```
+
+### Node.js Management
+```bash
+nvm install 18      # Install Node 18 LTS
+nvm install 20      # Install Node 20 LTS
+nvm use 20          # Switch to Node 20
+nvm ls              # List versions
+npm install -g npm@latest  # Update npm (optional)
+```
+
+### Add Packages
 
 ```bash
 bash scripts/setup-git-user.sh

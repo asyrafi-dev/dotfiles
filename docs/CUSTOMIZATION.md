@@ -116,6 +116,41 @@ vim.cmd[[colorscheme tokyonight]]
 
 See [LazyVim docs](https://www.lazyvim.org/) for more.
 
+## Node.js
+
+### NVM Commands
+
+```bash
+nvm install 18          # Install Node 18 LTS
+nvm install 20          # Install Node 20 LTS (recommended)
+nvm install 22          # Install Node 22 LTS
+nvm use 20              # Switch to Node 20
+nvm alias default 20    # Set default
+nvm ls                  # List installed
+nvm ls-remote --lts     # List all LTS versions
+```
+
+### Global Packages
+
+```bash
+npm install -g yarn pnpm typescript eslint prettier nodemon
+```
+
+### Update npm
+
+```bash
+npm install -g npm@latest  # Update npm (optional for LTS versions)
+```
+
+Note: npm is automatically updated to latest only for Node.js 24. For other versions (18/20/22), the bundled npm version is used by default.
+
+### Recommended LTS Versions
+
+- **Node.js 18 LTS** (Hydrogen) - Maintenance until April 2025
+- **Node.js 20 LTS** (Iron) - Active LTS until April 2026
+- **Node.js 22 LTS** (Jod) - Active LTS until April 2027
+- **Node.js 24** - Latest (will be LTS in October 2025) ⭐ Default
+
 ## Fonts
 
 ### Change Terminal Font

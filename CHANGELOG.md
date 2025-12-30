@@ -8,7 +8,9 @@ All notable changes to this project will be documented in this file.
 - Initial release
 - Automated installation script
 - Interactive Git configuration
+- Interactive Node.js LTS version selection (18/20/22/24)
 - Neovim v0.11.5 with LazyVim
+- Node.js LTS via NVM (npm updated to latest for Node 24 only)
 - 5 Nerd Fonts installation
 - Tmux with vi-mode and mouse support
 - Bash with git-aware prompt

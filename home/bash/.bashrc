@@ -41,6 +41,11 @@ alias vi='nvim'
 # Custom PATH
 export PATH="$HOME/bin:$HOME/.local/bin:$PATH"
 
+# NVM configuration
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
 # FZF configuration (if installed)
 if command -v fzf >/dev/null 2>&1; then
     export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'

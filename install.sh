@@ -2,6 +2,16 @@
 set -euo pipefail
 trap 'echo "ERROR on line $LINENO" >&2; exit 1' ERR
 
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+MAGENTA='\033[0;35m'
+CYAN='\033[0;36m'
+WHITE='\033[1;37m'
+NC='\033[0m' # No Color
+
 # Default options
 DRY_RUN=0
 ASSUME_YES=0
@@ -29,31 +39,50 @@ mkdir -p "$(dirname "$BACKUP_MANIFEST")"
 touch "$BACKUP_MANIFEST"
 export ASSUME_YES DRY_RUN LOG_FILE BACKUP_MANIFEST
 
-echo "[+] Starting Dotfiles Installation..."
+# ASCII Art Banner
+clear
+echo -e "${CYAN}"
+cat << "EOF"
+    ___                            _____ 
+   /   |  _______  ___________ _  / __(_)
+  / /| | / ___/ / / / ___/ __ `/ / /_/ / 
+ / ___ |(__  ) /_/ / /  / /_/ / / __/ /  
+/_/  |_/____/\__, /_/   \__,_/ /_/ /_/   
+            /____/                        
+EOF
+echo -e "${NC}"
+echo -e "${MAGENTA}╔════════════════════════════════════════════════╗${NC}"
+echo -e "${MAGENTA}║${NC}  ${WHITE}Dotfiles Installer for Ubuntu 24.04 LTS${NC}    ${MAGENTA}║${NC}"
+echo -e "${MAGENTA}║${NC}  ${CYAN}Automated setup for your dev environment${NC}   ${MAGENTA}║${NC}"
+echo -e "${MAGENTA}╚════════════════════════════════════════════════╝${NC}"
 echo
 
 # Ensure all scripts in the scripts/ directory are executable
 chmod +x scripts/*.sh >/dev/null 2>&1
 
 # Run all pre-installation checks
+echo -e "${YELLOW}[→]${NC} Running pre-installation checks..."
 bash scripts/preflight.sh
 
 # Confirm before proceeding
 echo
 if [ "${ASSUME_YES:-0}" -eq 1 ] || [ -n "${CI:-}" ]; then
-  echo "Proceeding non-interactively (assume-yes or CI environment)."
+  echo -e "${GREEN}[✓]${NC} Proceeding non-interactively"
 else
-  echo "This installer will modify your system and install packages. Review the script before continuing."
+  echo -e "${YELLOW}[!]${NC} This installer will modify your system and install packages."
   read -rp "Do you want to continue? [y/N] " answer
   if [[ ! $answer =~ ^[Yy]$ ]]; then
-      echo "Aborting installation. No changes were made."
+      echo -e "${RED}[✗]${NC} Installation aborted. No changes were made."
       exit 1
   fi
 fi
 
 # --- System Package Installation ---
-echo "[+] Installing system dependencies..."
-echo "  -> Updating package lists (apt-get update)..."
+echo
+echo -e "${CYAN}╔════════════════════════════════════════════════╗${NC}"
+echo -e "${CYAN}║${NC}  ${WHITE}Installing System Packages${NC}                   ${CYAN}║${NC}"
+echo -e "${CYAN}╚════════════════════════════════════════════════╝${NC}"
+echo -e "${YELLOW}[→]${NC} Updating package lists..."
 if [ "$DRY_RUN" -eq 1 ]; then
   echo "DRY-RUN: would run 'sudo apt-get update'"
 else
@@ -64,34 +93,52 @@ else
   sudo apt-get update
 fi
 
-echo "  -> Installing packages from 'packages/apt.txt'..."
+echo -e "${YELLOW}[→]${NC} Installing packages from packages/apt.txt..."
 if [ "$DRY_RUN" -eq 1 ]; then
   echo "DRY-RUN: would install packages listed in packages/apt.txt"
 else
   PACKAGES=$(grep -vE '^\s*#|^\s*$' packages/apt.txt || true)
   if [ -n "${PACKAGES:-}" ]; then
-    echo "  -> Installing packages:"
-    echo "$PACKAGES"
     echo "$PACKAGES" | xargs sudo apt-get install -y --no-install-recommends
+    echo -e "${GREEN}[✓]${NC} Packages installed successfully"
   else
-    echo "  -> No packages to install (packages/apt.txt is empty or missing)."
+    echo -e "${YELLOW}[!]${NC} No packages to install"
   fi
 fi
 echo
 
 # --- Post-installation Setup ---
-echo "[+] Performing post-installation setup..."
+echo -e "${CYAN}╔════════════════════════════════════════════════╗${NC}"
+echo -e "${CYAN}║${NC}  ${WHITE}Installing Development Tools${NC}                 ${CYAN}║${NC}"
+echo -e "${CYAN}╚════════════════════════════════════════════════╝${NC}"
 
 # Link fd-find to fd if it exists
 if command -v fdfind &> /dev/null; then
-    echo "  -> Linking 'fdfind' to 'fd'..."
+    echo -e "${YELLOW}[→]${NC} Linking fdfind to fd..."
     sudo ln -sf "$(which fdfind)" /usr/local/bin/fd
+    echo -e "${GREEN}[✓]${NC} fd linked successfully"
 fi
 
 # Run individual component installers
+echo
+echo -e "${YELLOW}[→]${NC} Installing Neovim..."
 bash scripts/install-neovim.sh
+echo -e "${GREEN}[✓]${NC} Neovim installed"
+
+echo
+echo -e "${YELLOW}[→]${NC} Installing Nerd Fonts..."
 bash scripts/install-nerd-fonts.sh
+echo -e "${GREEN}[✓]${NC} Nerd Fonts installed"
+
+echo
+echo -e "${YELLOW}[→]${NC} Setting up LazyVim..."
 bash scripts/install-lazyvim.sh
+echo -e "${GREEN}[✓]${NC} LazyVim configured"
+
+echo
+echo -e "${YELLOW}[→]${NC} Installing Node.js..."
+bash scripts/install-nodejs.sh
+echo -e "${GREEN}[✓]${NC} Node.js installed"
 
 # Apply dotfiles configuration using Stow
 echo "  -> Applying configuration files with Stow..."
@@ -213,7 +260,9 @@ fi
 # --- Post-Installation Verification ---
 if [ "$DRY_RUN" -eq 0 ]; then
   echo
-  echo "[+] Running post-installation verification..."
+  echo -e "${CYAN}╔════════════════════════════════════════════════╗${NC}"
+  echo -e "${CYAN}║${NC}  ${WHITE}Verifying Installation${NC}                      ${CYAN}║${NC}"
+  echo -e "${CYAN}╚════════════════════════════════════════════════╝${NC}"
   if [ -f "scripts/verify-install.sh" ]; then
     bash scripts/verify-install.sh || true
   fi
@@ -222,14 +271,16 @@ fi
 # --- Git User Configuration ---
 if [ "$DRY_RUN" -eq 0 ]; then
   echo
-  echo "[+] Git User Configuration"
+  echo -e "${CYAN}╔════════════════════════════════════════════════╗${NC}"
+  echo -e "${CYAN}║${NC}  ${WHITE}Git Configuration${NC}                           ${CYAN}║${NC}"
+  echo -e "${CYAN}╚════════════════════════════════════════════════╝${NC}"
   CURRENT_GIT_NAME=$(git config --global user.name 2>/dev/null || echo "")
   CURRENT_GIT_EMAIL=$(git config --global user.email 2>/dev/null || echo "")
   
   if [ -z "$CURRENT_GIT_NAME" ] || [ -z "$CURRENT_GIT_EMAIL" ]; then
-    echo "Git user information is not configured."
+    echo -e "${YELLOW}[!]${NC} Git user information is not configured"
     if [ "${ASSUME_YES:-0}" -eq 1 ] || [ -n "${CI:-}" ]; then
-      echo "Skipping Git user configuration in non-interactive mode."
+      echo -e "${YELLOW}[!]${NC} Skipping Git configuration in non-interactive mode"
       echo "Run 'bash scripts/setup-git-user.sh' later to configure."
     else
       echo
@@ -237,12 +288,12 @@ if [ "$DRY_RUN" -eq 0 ]; then
       if [[ ! $setup_git =~ ^[Nn]$ ]]; then
         bash scripts/setup-git-user.sh
       else
-        echo "You can configure Git later by running:"
+        echo -e "${YELLOW}[!]${NC} You can configure Git later:"
         echo "  bash scripts/setup-git-user.sh"
       fi
     fi
   else
-    echo "Git is already configured:"
+    echo -e "${GREEN}[✓]${NC} Git is already configured:"
     echo "  Name:  $CURRENT_GIT_NAME"
     echo "  Email: $CURRENT_GIT_EMAIL"
   fi
@@ -250,29 +301,29 @@ fi
 
 # --- Final Instructions ---
 echo
-echo "--------------------------------------------------"
-echo "Installation Complete"
-echo "--------------------------------------------------"
+echo -e "${GREEN}╔════════════════════════════════════════════════╗${NC}"
+echo -e "${GREEN}║${NC}  ${WHITE}Installation Complete!${NC}                      ${GREEN}║${NC}"
+echo -e "${GREEN}╚════════════════════════════════════════════════╝${NC}"
 echo
-echo "Backup manifest saved to: $BACKUP_MANIFEST"
+echo -e "${CYAN}Backup manifest:${NC} $BACKUP_MANIFEST"
 echo
-echo "Next steps:"
-echo "1. Restart your terminal for all changes to take effect:"
-echo "   source ~/.bashrc"
+echo -e "${WHITE}Next steps:${NC}"
+echo -e "  ${YELLOW}1.${NC} Restart your terminal:"
+echo -e "     ${CYAN}source ~/.bashrc${NC}"
 echo
-echo "2. Launch Neovim to complete LazyVim plugin setup:"
-echo "   nvim"
-echo "   (Wait for plugins to install, then restart nvim)"
+echo -e "  ${YELLOW}2.${NC} Launch Neovim to complete LazyVim setup:"
+echo -e "     ${CYAN}nvim${NC}"
+echo -e "     (Wait for plugins to install, then restart)"
 echo
-echo "3. If you skipped Git configuration, set it up:"
-echo "   bash scripts/setup-git-user.sh"
+echo -e "  ${YELLOW}3.${NC} If you skipped Git configuration:"
+echo -e "     ${CYAN}bash scripts/setup-git-user.sh${NC}"
 echo
-echo "4. Test your new environment:"
-echo "   - Tmux: tmux"
-echo "   - FZF: Ctrl+T (find files), Ctrl+R (search history)"
-echo "   - Ripgrep: rg 'search term'"
-echo "   - Git aliases: git st, git lg, git aliases"
+echo -e "  ${YELLOW}4.${NC} Test your new environment:"
+echo -e "     ${CYAN}tmux${NC}              # Terminal multiplexer"
+echo -e "     ${CYAN}Ctrl+T${NC}            # Find files (FZF)"
+echo -e "     ${CYAN}Ctrl+R${NC}            # Search history (FZF)"
+echo -e "     ${CYAN}git aliases${NC}       # Show Git shortcuts"
 echo
-echo "For help, see: docs/QUICK_START.md"
-echo "If issues occur, run: ./scripts/rollback.sh"
+echo -e "${MAGENTA}For help:${NC} docs/QUICK_START.md"
+echo -e "${MAGENTA}Rollback:${NC} ./scripts/rollback.sh"
 echo
