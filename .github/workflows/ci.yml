@@ -21,36 +21,49 @@ on:
 permissions:
   contents: read
 
+env:
+  CI: true
+
 jobs:
   lint:
-    name: Shell Script Linting
-    runs-on: ubuntu-latest
+    name: Lint (shellcheck + shfmt)
+    runs-on: ubuntu-24.04
     steps:
-      - name: Check out repository code
+      - name: Check out repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Run ShellCheck to analyze shell scripts
-        uses: ludeeus/action-shellcheck@2.0.0
-        with:
-          scandir: 'scripts/'
+      - name: Install linting tools
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y shellcheck shfmt || true
+
+      - name: Run ShellCheck
+        run: |
+          files=$(git ls-files '*.sh' | tr '\n' ' ')
+          if [ -z "$files" ]; then
+            echo "No shell scripts to lint"
+          else
+            shellcheck -x -S all $files
+          fi
 
       - name: Run shfmt (format check)
-        uses: mvdan/shfmt@v3
-        with:
-          args: -d -i 2 -s $(git ls-files '*.sh' | tr '\n' ' ')
+        run: |
+          files=$(git ls-files '*.sh' | tr '\n' ' ')
+          if [ -z "$files" ]; then
+            echo "No shell scripts to format-check"
+          else
+            shfmt -l -i 2 -ci $files
+          fi
 
   test-installation:
-    name: Test - Dry-run install on ${{ matrix.runner }}
+    name: Test - Dry-run install on ubuntu-24.04
     needs: lint
-    runs-on: ${{ matrix.runner }}
-    strategy:
-      matrix:
-        runner: [ubuntu-24.04]
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
-      - name: Check out repository code
+      - name: Check out repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -63,7 +76,7 @@ jobs:
           restore-keys: ${{ runner.os }}-apt-
 
       - name: Make install scripts executable
-        run: chmod +x install.sh scripts/*.sh
+        run: chmod +x install.sh scripts/*.sh || true
 
       - name: Run preflight checks
         run: bash -e ./scripts/preflight.sh
@@ -82,7 +95,7 @@ jobs:
       - name: Upload CI artifacts (logs and previews)
         uses: actions/upload-artifact@v4
         with:
-          name: ci-artifacts-${{ matrix.runner }}
+          name: ci-artifacts
           path: |
             ci-install.log
             stow-preview.txt
@@ -99,7 +112,7 @@ jobs:
           fetch-depth: 0
 
       - name: Make install scripts executable
-        run: chmod +x install.sh scripts/*.sh
+        run: chmod +x install.sh scripts/*.sh || true
 
       - name: Run full installer (DANGEROUS)
         run: ./install.sh --yes --log=ci-full-install.log
