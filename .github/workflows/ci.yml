@@ -100,7 +100,7 @@ jobs:
       - name: Preview stow (dry-run)
         run: |
           if command -v stow >/dev/null 2>&1; then
-            (cd home && stow -n -t ~ --no-folding -- *) > stow-preview.txt || true
+            (cd home && stow -n -t ~ --no-folding --adopt -- *) > stow-preview.txt || true
           else
             echo 'stow not installed; skipping preview' > stow-preview.txt
           fi
