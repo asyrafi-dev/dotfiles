@@ -292,6 +292,33 @@ else
 fi
 echo
 
+echo "[12] Checking Podman..."
+if command -v podman >/dev/null 2>&1; then
+  PODMAN_VERSION=$(podman --version | awk '{print $3}')
+  echo "✓ Podman installed: v$PODMAN_VERSION"
+  
+  # Check podman-compose
+  if command -v podman-compose >/dev/null 2>&1; then
+    echo "✓ podman-compose installed"
+  else
+    echo "⚠ podman-compose not found"
+    ((WARNINGS++))
+  fi
+else
+  echo "⚠ Podman not installed"
+  ((WARNINGS++))
+fi
+
+# Check kubectl
+if command -v kubectl >/dev/null 2>&1; then
+  KUBECTL_VERSION=$(kubectl version --client -o yaml 2>/dev/null | grep gitVersion | awk '{print $2}' || echo "installed")
+  echo "✓ kubectl installed: $KUBECTL_VERSION"
+else
+  echo "⚠ kubectl not found"
+  ((WARNINGS++))
+fi
+echo
+
 echo
 echo "Verification Summary"
 echo "===================="

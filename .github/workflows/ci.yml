@@ -114,6 +114,9 @@ jobs:
           python3 -c "import pynvim" && echo "pynvim installed" || echo "pynvim not found"
           command -v php && php -v | head -1 || echo "PHP not found"
           command -v composer && composer --version | head -1 || echo "Composer not found"
+          command -v podman && podman --version || echo "Podman not found"
+          command -v podman-compose && echo "podman-compose installed" || echo "podman-compose not found"
+          command -v kubectl && kubectl version --client 2>/dev/null | head -1 || echo "kubectl not found"
       
       - name: Check Node.js and NVM installation
         run: |
@@ -427,6 +430,7 @@ jobs:
           echo "   🟢 Node.js versions (24*, 22, 20, 18)"
           echo "   🥟 Bun runtime"
           echo "   🐘 PHP 8.4 with Composer"
+          echo "   🦭 Podman with kubectl (containers & K8s)"
           echo "   🐱 Kitty terminal"
           echo "   🐙 LazyGit (from GitHub)"
           echo "   🐍 Python packages (pynvim)"
@@ -435,6 +439,7 @@ jobs:
           echo "⭐ Default Node.js version: 24 (with npm latest)"
           echo "🥟 Bun: Latest stable version"
           echo "🐘 PHP: 8.4 with common extensions"
+          echo "🦭 Podman: Rootless container runtime"
           echo "🐱 Kitty: Recommended terminal for LazyVim"
           echo "🐙 LazyGit: Latest from GitHub releases"
           echo ""

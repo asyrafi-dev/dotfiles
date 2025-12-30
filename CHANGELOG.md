@@ -12,6 +12,8 @@ All notable changes to this project.
 - LazyGit installer from GitHub releases (latest version)
 - Python packages installer (pynvim for Neovim Python support)
 - PHP 8.4 installer with Composer and common extensions
+- Podman installer (rootless container runtime with podman-compose)
+- kubectl installer with checksum verification and autocompletion
 - Additional LazyVim dependencies (luarocks, imagemagick, sqlite3)
 - npm global packages (tree-sitter-cli, neovim, mermaid-cli)
 - Bun PATH configuration in dotfiles bashrc
@@ -74,6 +76,8 @@ Initial release.
 - Node.js LTS via NVM (18/20/22/24)
 - Bun runtime and toolkit
 - PHP 8.4 with Composer
+- Podman (rootless containers)
+- kubectl (Kubernetes CLI)
 - Git with 30+ aliases
 - LazyGit terminal UI
 - Tmux with vi-mode and mouse support

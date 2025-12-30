@@ -13,6 +13,8 @@ My personal dotfiles for Ubuntu 24.04 LTS. One command to set up everything.
 - **Node.js LTS** via NVM (18/20/22/24) with npm packages (tree-sitter-cli, neovim, mermaid-cli)
 - **Bun** - Fast JavaScript runtime and toolkit
 - **PHP 8.4** with Composer and common extensions
+- **Podman** - Rootless container runtime (Docker alternative)
+- **kubectl** - Kubernetes CLI for cluster management
 - **Python packages** - pynvim for Neovim Python support
 - **Git** with useful aliases
 - **Tmux** with vi-mode and mouse support
@@ -70,6 +72,8 @@ python3 -c "import pynvim"          # Verify pynvim
 bun --version                       # Verify Bun
 php -v                              # Verify PHP
 composer --version                  # Verify Composer
+podman --version                    # Verify Podman
+kubectl version --client            # Verify kubectl
 bash scripts/setup-git-user.sh      # Configure Git if skipped
 ```
 
@@ -181,6 +185,65 @@ composer update         # Update dependencies
 composer create-project laravel/laravel myapp
 cd myapp
 php artisan serve
+```
+
+### Podman Usage
+
+```bash
+# Check version
+podman --version
+
+# Run container (rootless, no sudo needed)
+podman run hello-world
+podman run -d -p 8080:80 nginx
+
+# Container management
+podman ps                    # List running containers
+podman ps -a                 # List all containers
+podman stop <container>      # Stop container
+podman rm <container>        # Remove container
+
+# Image management
+podman images                # List images
+podman pull nginx            # Pull image
+podman rmi <image>           # Remove image
+
+# Docker Compose compatibility
+podman-compose up -d         # Start services
+podman-compose down          # Stop services
+podman-compose logs          # View logs
+
+# Docker alias (add to ~/.bashrc if needed)
+alias docker=podman
+```
+
+### kubectl Usage
+
+```bash
+# Check version
+kubectl version --client
+
+# Cluster info
+kubectl cluster-info
+kubectl get nodes
+
+# Pod management
+kubectl get pods                     # List pods
+kubectl get pods -A                  # All namespaces
+kubectl describe pod <name>          # Pod details
+kubectl logs <pod>                   # View logs
+
+# Deployments
+kubectl get deployments
+kubectl apply -f deployment.yaml
+kubectl delete -f deployment.yaml
+
+# Services
+kubectl get services
+kubectl expose deployment <name> --port=80
+
+# Short alias (already configured)
+k get pods                           # Same as kubectl get pods
 ```
 
 ## Keybindings

@@ -63,6 +63,8 @@ Automated tests run on every push and pull request:
 - Node.js with npm packages (tree-sitter-cli, neovim, mermaid-cli)
 - Python packages (pynvim)
 - PHP 8.4 with Composer
+- Podman (rootless containers)
+- kubectl (Kubernetes CLI)
 - Bun runtime
 - All system dependencies (luarocks, imagemagick, sqlite3, etc.)
 

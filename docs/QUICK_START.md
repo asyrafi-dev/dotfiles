@@ -20,6 +20,8 @@ tree-sitter --version               # Verify tree-sitter
 bun --version                       # Verify Bun
 php -v                              # Verify PHP
 composer --version                  # Verify Composer
+podman --version                    # Verify Podman
+kubectl version --client            # Verify kubectl
 bash scripts/setup-git-user.sh      # Configure Git if skipped
 ```
 
@@ -155,6 +157,25 @@ composer --version      # Check Composer
 composer init           # Create project
 composer install        # Install dependencies
 php artisan serve       # Laravel dev server
+```
+
+### Podman Usage
+```bash
+podman --version        # Check version
+podman run hello-world  # Test installation
+podman ps               # List containers
+podman images           # List images
+podman-compose up -d    # Start compose
+podman-compose down     # Stop compose
+```
+
+### kubectl Usage
+```bash
+kubectl version --client  # Check version
+kubectl cluster-info      # Cluster info
+kubectl get pods          # List pods
+kubectl get nodes         # List nodes
+k get pods                # Short alias
 ```
 
 ### Add System Packages

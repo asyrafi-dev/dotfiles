@@ -222,6 +222,11 @@ print_info "Installing PHP..."
 bash scripts/install-php.sh
 print_success "PHP installed"
 
+echo
+print_info "Installing Podman..."
+bash scripts/install-podman.sh
+print_success "Podman installed"
+
 # Apply dotfiles configuration using Stow
 echo "  -> Applying configuration files with Stow..."
 # Remove potentially conflicting files before stowing

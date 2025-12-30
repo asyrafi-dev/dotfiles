@@ -236,6 +236,93 @@ ls /etc/php/
 sudo update-alternatives --config php
 ```
 
+## Podman Issues
+
+### Podman not found
+
+```bash
+# Reinstall Podman
+cd ~/dotfiles
+bash scripts/install-podman.sh
+```
+
+### Permission denied
+
+```bash
+# Podman runs rootless, no sudo needed
+# If issues, check subuid/subgid
+cat /etc/subuid
+cat /etc/subgid
+
+# Add your user if missing
+sudo usermod --add-subuids 100000-165535 --add-subgids 100000-165535 $(whoami)
+```
+
+### Cannot pull images
+
+```bash
+# Check registries config
+cat ~/.config/containers/registries.conf
+
+# Test with full image path
+podman pull docker.io/library/nginx
+```
+
+### Container networking issues
+
+```bash
+# Reset Podman networking
+podman system reset
+
+# Recreate default network
+podman network create podman
+```
+
+## kubectl Issues
+
+### kubectl not found
+
+```bash
+# Reinstall kubectl via Podman installer
+cd ~/dotfiles
+bash scripts/install-podman.sh
+```
+
+### Autocompletion not working
+
+```bash
+# Reload bashrc
+source ~/.bashrc
+
+# Check if completion is loaded
+type _init_completion
+```
+
+### Cannot connect to cluster
+
+```bash
+# Check kubeconfig
+echo $KUBECONFIG
+cat ~/.kube/config
+
+# Test connection
+kubectl cluster-info
+
+# Check context
+kubectl config current-context
+kubectl config get-contexts
+```
+
+### Permission denied
+
+```bash
+# Check kubeconfig permissions
+chmod 600 ~/.kube/config
+
+# Verify user in kubeconfig
+kubectl config view
+```
+
 ### "Please tell me who you are"
 
 ```bash

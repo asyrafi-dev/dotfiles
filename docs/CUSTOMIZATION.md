@@ -323,6 +323,133 @@ post_max_size = 100M
 max_execution_time = 300
 ```
 
+## Podman
+
+### Basic Commands
+
+```bash
+# Run container (rootless)
+podman run -d -p 8080:80 nginx
+podman run -it ubuntu bash
+
+# Container management
+podman ps                    # Running containers
+podman ps -a                 # All containers
+podman stop <id>             # Stop container
+podman rm <id>               # Remove container
+podman logs <id>             # View logs
+```
+
+### Docker Compatibility
+
+Add to `~/.bashrc`:
+```bash
+alias docker=podman
+alias docker-compose=podman-compose
+```
+
+### Podman Compose
+
+```bash
+# Start services
+podman-compose up -d
+
+# Stop services
+podman-compose down
+
+# View logs
+podman-compose logs -f
+
+# Rebuild
+podman-compose up -d --build
+```
+
+### Rootless Configuration
+
+Podman runs rootless by default. Config files:
+```
+~/.config/containers/registries.conf    # Registry settings
+~/.config/containers/storage.conf       # Storage settings
+```
+
+### Common Images
+
+```bash
+podman pull nginx
+podman pull postgres:16
+podman pull redis:alpine
+podman pull node:20-alpine
+podman pull php:8.4-fpm
+```
+
+## kubectl
+
+### Basic Commands
+
+```bash
+# Check version
+kubectl version --client
+
+# Cluster info
+kubectl cluster-info
+kubectl get nodes
+
+# Pod management
+kubectl get pods
+kubectl get pods -A                  # All namespaces
+kubectl describe pod <name>
+kubectl logs <pod>
+kubectl exec -it <pod> -- bash
+```
+
+### Deployments
+
+```bash
+kubectl get deployments
+kubectl apply -f deployment.yaml
+kubectl delete -f deployment.yaml
+kubectl rollout status deployment/<name>
+kubectl rollout undo deployment/<name>
+```
+
+### Services
+
+```bash
+kubectl get services
+kubectl expose deployment <name> --port=80 --type=LoadBalancer
+kubectl port-forward svc/<name> 8080:80
+```
+
+### Contexts and Namespaces
+
+```bash
+# View contexts
+kubectl config get-contexts
+kubectl config current-context
+
+# Switch context
+kubectl config use-context <name>
+
+# Set default namespace
+kubectl config set-context --current --namespace=<name>
+```
+
+### Short Alias
+
+The `k` alias is already configured:
+```bash
+k get pods              # Same as kubectl get pods
+k get svc               # Same as kubectl get services
+k apply -f file.yaml    # Same as kubectl apply -f file.yaml
+```
+
+### Autocompletion
+
+kubectl autocompletion is automatically enabled. Restart terminal or:
+```bash
+source ~/.bashrc
+```
+
 ## Fonts
 
 ### Change Terminal Font
