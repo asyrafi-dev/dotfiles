@@ -105,6 +105,9 @@ jobs:
             echo 'stow not installed; skipping preview' > stow-preview.txt
           fi
 
+      - name: Fix permissions for apt cache
+        run: sudo chmod -R 777 /var/cache/apt/archives || true
+
       - name: Upload CI artifacts (logs and previews)
         uses: actions/upload-artifact@v4
         with:
