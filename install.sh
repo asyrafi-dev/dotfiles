@@ -1,5 +1,30 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
+trap 'echo "ERROR on line $LINENO" >&2; exit 1' ERR
+
+# Default options
+DRY_RUN=0
+ASSUME_YES=0
+LOG_FILE=""
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --yes|-y) ASSUME_YES=1; shift;;
+    --dry-run) DRY_RUN=1; shift;;
+    --log) LOG_FILE="$2"; shift 2;;
+    --log=*) LOG_FILE="${1#*=}"; shift;;
+    -h|--help) echo "Usage: $0 [--yes] [--dry-run] [--log FILE]"; exit 0;;
+    *) echo "Unknown argument: $1"; exit 1;;
+  esac
+done
+
+if [ -n "$LOG_FILE" ]; then
+  mkdir -p "$(dirname "$LOG_FILE")"
+  echo "Logging to $LOG_FILE"
+  exec > >(tee -a "$LOG_FILE") 2>&1
+fi
+
+export ASSUME_YES DRY_RUN LOG_FILE
 
 echo "[+] Starting Dotfiles Installation..."
 echo
@@ -10,13 +35,41 @@ chmod +x scripts/*.sh >/dev/null 2>&1
 # Run all pre-installation checks
 bash scripts/preflight.sh
 
+# Confirm before proceeding
+echo
+echo "This installer will modify your system and install packages. Review the script before continuing."
+read -rp "Do you want to continue? [y/N] " answer
+if [[ ! $answer =~ ^[Yy]$ ]]; then
+    echo "Aborting installation. No changes were made."
+    exit 1
+fi
+
 # --- System Package Installation ---
 echo "[+] Installing system dependencies..."
 echo "  -> Updating package lists (apt-get update)..."
-sudo apt-get update
+if [ "$DRY_RUN" -eq 1 ]; then
+  echo "DRY-RUN: would run 'sudo apt-get update'"
+else
+  if ! command -v apt-get >/dev/null 2>&1; then
+    echo "ERROR: apt-get not found. This installer requires apt-based systems." >&2
+    exit 1
+  fi
+  sudo apt-get update
+fi
 
 echo "  -> Installing packages from 'packages/apt.txt'..."
-grep -vE '^\s*#|^\s*$' packages/apt.txt | xargs sudo apt-get install -y --no-install-recommends
+if [ "$DRY_RUN" -eq 1 ]; then
+  echo "DRY-RUN: would install packages listed in packages/apt.txt"
+else
+  PACKAGES=$(grep -vE '^\s*#|^\s*$' packages/apt.txt || true)
+  if [ -n "${PACKAGES:-}" ]; then
+    echo "  -> Installing packages:"
+    echo "$PACKAGES"
+    echo "$PACKAGES" | xargs sudo apt-get install -y --no-install-recommends
+  else
+    echo "  -> No packages to install (packages/apt.txt is empty or missing)."
+  fi
+fi
 
 # --- Post-installation Setup ---
 echo "[+] Performing post-installation setup..."
@@ -35,8 +88,50 @@ bash scripts/install-lazyvim.sh
 # Apply dotfiles configuration using Stow
 echo "  -> Applying configuration files with Stow..."
 # Remove potentially conflicting files before stowing
-rm -f ~/.bashrc
-(cd home && stow -t ~ --no-folding -- *)
+if [ "$DRY_RUN" -eq 1 ]; then
+  echo "DRY-RUN: would remove or backup ~/.bashrc"
+else
+  if [ -f "$HOME/.bashrc" ]; then
+    BACKUP="$HOME/.bashrc.bak.$(date +%s)"
+    echo "  -> Backing up existing ~/.bashrc to $BACKUP"
+    mv "$HOME/.bashrc" "$BACKUP"
+  fi
+fi
+
+if [ "$DRY_RUN" -eq 1 ]; then
+  echo "DRY-RUN: would run 'stow' to apply dotfiles (preview):"
+  if command -v stow >/dev/null 2>&1; then
+    (cd home && stow -n -t ~ --no-folding -- *)
+  else
+    echo "DRY-RUN: 'stow' not installed"
+  fi
+else
+  if ! command -v stow >/dev/null 2>&1; then
+    echo "ERROR: 'stow' is required to apply dotfiles."
+    if [ "$ASSUME_YES" -eq 1 ]; then
+      echo "Installing stow..."
+      sudo apt-get install -y stow
+    else
+      read -rp "Install 'stow' now? [y/N] " install_stow
+      if [[ $install_stow =~ ^[Yy]$ ]]; then
+        sudo apt-get install -y stow
+      else
+        echo "Cannot continue without 'stow'. Exiting."
+        exit 1
+      fi
+    fi
+  fi
+
+  # show what will be done
+  echo "Preview of stow actions:"
+  (cd home && stow -n -t ~ --no-folding -- *)
+  read -rp "Apply these changes? [y/N] " stow_confirm
+  if [[ ! $stow_confirm =~ ^[Yy]$ ]]; then
+    echo "Skipping stow. You can run 'stow -t ~ --no-folding -- *' manually."
+  else
+    (cd home && stow -t ~ --no-folding -- *)
+  fi
+fi
 
 # --- Final Instructions ---
 echo

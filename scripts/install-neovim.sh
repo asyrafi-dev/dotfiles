@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
+trap 'echo "Neovim installer error on line $LINENO" >&2; exit 1' ERR
+
+if command -v nvim >/dev/null 2>&1; then
+  echo "Neovim already installed; skipping." 
+  nvim --version | head -n 2 || true
+  exit 0
+fi
 
 cd /tmp
 
@@ -15,4 +22,6 @@ sudo mv nvim-linux-x86_64.appimage /usr/local/bin/nvim
 
 # Verifikasi instalasi
 echo "Neovim installed successfully!"
-nvim --version | head -n 2
+if command -v nvim >/dev/null 2>&1; then
+  nvim --version | head -n 2
+fi

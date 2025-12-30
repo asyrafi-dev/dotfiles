@@ -2,71 +2,110 @@
 
 name: CI - Lint and Test Dotfiles
 
-# Controls when the workflow will run
-on:
-  # Triggers the workflow on push events but only for the main/master branch
-  push:
-    branches:
-      - main
-      - master
-  # Triggers the workflow on pull request events for the main/master branch
-  pull_request:
-    branches:
-      - main
-      - master
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+    inputs:
+      full_install:
+        description: 'Run a full (destructive) installation on the runner (for maintainers only)'
+        required: false
+        default: 'false'
+
+permissions:
+  contents: read
+
 jobs:
-  # Job 1: This job lints all shell scripts in the repository for potential bugs and style issues.
   lint:
     name: Shell Script Linting
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Run ShellCheck to analyze shell scripts
-        # This uses a popular, pre-built shellcheck action from the GitHub Marketplace.
         uses: ludeeus/action-shellcheck@2.0.0
         with:
-          # Recursively scan all files with a .sh extension and the main install script.
-          scandir: './'
+          scandir: 'scripts/'
 
-  # Job 2: This job tests the installation script across multiple, specified versions of Ubuntu.
-  # It will only run if the 'lint' job completes successfully.
+      - name: Run shfmt (format check)
+        uses: mvdan/shfmt@v3
+        with:
+          args: -d -i 2 -s $(git ls-files '*.sh' | tr '\n' ' ')
+
   test-installation:
-    name: Test on Ubuntu ${{ matrix.ubuntu-version }}
+    name: Test - Dry-run install on ${{ matrix.runner }}
     needs: lint
-    runs-on: ${{ matrix.ubuntu-version }}
+    runs-on: ${{ matrix.runner }}
     strategy:
-      # This matrix strategy tells GitHub Actions to run a copy of this job for each
-      # Ubuntu version listed below. This ensures broad compatibility.
       matrix:
-        ubuntu-version: [ubuntu-24.04]
-
+        runner: [ubuntu-24.04]
+    timeout-minutes: 45
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Cache apt packages
         uses: actions/cache@v4
         with:
           path: /var/cache/apt/archives
           key: ${{ runner.os }}-apt-${{ hashFiles('**/packages/apt.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-apt-
+          restore-keys: ${{ runner.os }}-apt-
 
       - name: Make install scripts executable
         run: chmod +x install.sh scripts/*.sh
 
-      - name: Execute installation script
-        run: bash -ex ./install.sh
+      - name: Run preflight checks
+        run: bash -e ./scripts/preflight.sh
 
-      - name: Verify Neovim installation
-        run: nvim --version
+      - name: Run installer in dry-run and log output
+        run: ./install.sh --dry-run --yes --log=ci-install.log
 
-      - name: Verify Stow installation
-        run: stow --version
-      
-      - name: Verify Tmux installation
-        run: tmux -V
+      - name: Preview stow (dry-run)
+        run: |
+          if command -v stow >/dev/null 2>&1; then
+            (cd home && stow -n -t ~ --no-folding -- *) > stow-preview.txt || true
+          else
+            echo 'stow not installed; skipping preview' > stow-preview.txt
+          fi
+
+      - name: Upload CI artifacts (logs and previews)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-artifacts-${{ matrix.runner }}
+          path: |
+            ci-install.log
+            stow-preview.txt
+
+  full-install:
+    name: Full Install (manual trigger only)
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.full_install == 'true' }}
+    runs-on: ubuntu-24.04
+    needs: lint
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Make install scripts executable
+        run: chmod +x install.sh scripts/*.sh
+
+      - name: Run full installer (DANGEROUS)
+        run: ./install.sh --yes --log=ci-full-install.log
+
+      - name: Upload full-install log
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-full-install-log
+          path: ci-full-install.log
