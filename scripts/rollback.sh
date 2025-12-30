@@ -4,8 +4,15 @@ trap 'echo "Rollback script error on line $LINENO" >&2; exit 1' ERR
 
 MANIFEST="${1:-$HOME/.dotfiles_backups_latest.txt}"
 if [ ! -f "$MANIFEST" ]; then
-  # try to find the most recent manifest
-  MANIFEST=$(ls -1t $HOME/.dotfiles_backups_* 2>/dev/null | head -n1 || true)
+  # try to find the most recent manifest safely without parsing ls
+  newest=""
+  for f in "$HOME"/.dotfiles_backups_*; do
+    [ -e "$f" ] || continue
+    if [ -z "$newest" ] || [ "$f" -nt "$newest" ]; then
+      newest="$f"
+    fi
+  done
+  MANIFEST="${newest:-}"
 fi
 
 if [ -z "$MANIFEST" ] || [ ! -f "$MANIFEST" ]; then
