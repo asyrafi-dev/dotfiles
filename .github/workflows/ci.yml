@@ -237,17 +237,29 @@ jobs:
           # Set environment for non-interactive installation
           export CI=true
           export ASSUME_YES=1
+          export DRY_RUN=0
           
-          # For non-default versions, we need to modify the script
-          # to install the specific version instead of default 24
+          # For non-default versions, modify the script inline
           if [ "${{ matrix.node_version }}" != "24" ]; then
-            # Create a modified version of the script
-            cat scripts/install-nodejs.sh | \
-              sed 's/NODE_VERSION="24"/NODE_VERSION="${{ matrix.node_version }}"/' | \
-              bash
+            echo "Creating modified script for Node.js ${{ matrix.node_version }}..."
+            sed 's/NODE_VERSION="24"/NODE_VERSION="${{ matrix.node_version }}"/' scripts/install-nodejs.sh > /tmp/install-nodejs-${{ matrix.node_version }}.sh
+            chmod +x /tmp/install-nodejs-${{ matrix.node_version }}.sh
+            bash /tmp/install-nodejs-${{ matrix.node_version }}.sh
           else
-            # For version 24 (default), run script as-is
+            echo "Running default script for Node.js 24..."
             bash scripts/install-nodejs.sh
+          fi
+          
+          # Verify installation completed
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          
+          if command -v node >/dev/null 2>&1; then
+            echo "✅ Node.js installed: $(node -v)"
+            echo "✅ npm version: $(npm -v)"
+          else
+            echo "❌ Node.js installation failed"
+            exit 1
           fi
       
       - name: ✅ Verify Node.js ${{ matrix.node_version }}

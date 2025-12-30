@@ -18,16 +18,23 @@ if [ -d "$HOME/.nvm" ]; then
   
   # Check if Node is already installed
   if command -v node >/dev/null 2>&1; then
+    CURRENT_NODE_VERSION=$(node -v | cut -d'.' -f1 | sed 's/v//')
     echo "Node.js already installed: $(node -v)"
     echo "npm version: $(npm -v)"
     
-    if [ "${ASSUME_YES:-0}" -eq 0 ] && [ -z "${CI:-}" ]; then
+    # In CI mode, check if we need to install a different version
+    if [ -n "${CI:-}" ] && [ "${ASSUME_YES:-0}" -eq 1 ]; then
+      # CI mode: allow installing different versions
+      echo "CI mode: will proceed to install/switch Node.js version"
+    elif [ "${ASSUME_YES:-0}" -eq 0 ]; then
+      # Interactive mode: ask user
       read -rp "Do you want to install another Node.js version? [y/N] " install_another
       if [[ ! $install_another =~ ^[Yy]$ ]]; then
         echo "Skipping Node.js installation."
         exit 0
       fi
     else
+      # Non-interactive non-CI mode: skip
       echo "Node.js already installed, skipping."
       exit 0
     fi
