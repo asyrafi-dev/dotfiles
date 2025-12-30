@@ -2,15 +2,26 @@
 set -euo pipefail
 trap 'echo "ERROR on line $LINENO" >&2; exit 1' ERR
 
-# Colors
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-MAGENTA='\033[0;35m'
-CYAN='\033[0;36m'
-WHITE='\033[1;37m'
-NC='\033[0m' # No Color
+# Colors (only if terminal supports it)
+if [ -t 1 ]; then
+  RED='\033[0;31m'
+  GREEN='\033[0;32m'
+  YELLOW='\033[1;33m'
+  BLUE='\033[0;34m'
+  MAGENTA='\033[0;35m'
+  CYAN='\033[0;36m'
+  WHITE='\033[1;37m'
+  NC='\033[0m'
+else
+  RED=''
+  GREEN=''
+  YELLOW=''
+  BLUE=''
+  MAGENTA=''
+  CYAN=''
+  WHITE=''
+  NC=''
+fi
 
 # Default options
 DRY_RUN=0
@@ -39,10 +50,55 @@ mkdir -p "$(dirname "$BACKUP_MANIFEST")"
 touch "$BACKUP_MANIFEST"
 export ASSUME_YES DRY_RUN LOG_FILE BACKUP_MANIFEST
 
-# ASCII Art Banner
-clear
-echo -e "${CYAN}"
-cat << "EOF"
+# Helper functions for colored output
+print_success() {
+  if [ -n "${GREEN:-}" ]; then
+    echo -e "${GREEN}[✓]${NC} $1"
+  else
+    echo "[+] $1"
+  fi
+}
+
+print_info() {
+  if [ -n "${YELLOW:-}" ]; then
+    echo -e "${YELLOW}[→]${NC} $1"
+  else
+    echo "[+] $1"
+  fi
+}
+
+print_warning() {
+  if [ -n "${YELLOW:-}" ]; then
+    echo -e "${YELLOW}[!]${NC} $1"
+  else
+    echo "[!] $1"
+  fi
+}
+
+print_error() {
+  if [ -n "${RED:-}" ]; then
+    echo -e "${RED}[✗]${NC} $1"
+  else
+    echo "[✗] $1"
+  fi
+}
+
+print_header() {
+  if [ -n "${CYAN:-}" ]; then
+    echo -e "${CYAN}╔════════════════════════════════════════════════╗${NC}"
+    echo -e "${CYAN}║${NC}  ${WHITE}$1${NC}$(printf '%*s' $((47 - ${#1})) '')${CYAN}║${NC}"
+    echo -e "${CYAN}╚════════════════════════════════════════════════╝${NC}"
+  else
+    echo "$1"
+    echo "$(printf '=%.0s' {1..50})"
+  fi
+}
+
+# ASCII Art Banner (only in interactive mode)
+if [ -t 1 ] && [ -z "${CI:-}" ]; then
+  clear
+  echo -e "${CYAN}"
+  cat << "EOF"
     ___                            _____ 
    /   |  _______  ___________ _  / __(_)
   / /| | / ___/ / / / ___/ __ `/ / /_/ / 
@@ -50,39 +106,42 @@ cat << "EOF"
 /_/  |_/____/\__, /_/   \__,_/ /_/ /_/   
             /____/                        
 EOF
-echo -e "${NC}"
-echo -e "${MAGENTA}╔════════════════════════════════════════════════╗${NC}"
-echo -e "${MAGENTA}║${NC}  ${WHITE}Dotfiles Installer for Ubuntu 24.04 LTS${NC}    ${MAGENTA}║${NC}"
-echo -e "${MAGENTA}║${NC}  ${CYAN}Automated setup for your dev environment${NC}   ${MAGENTA}║${NC}"
-echo -e "${MAGENTA}╚════════════════════════════════════════════════╝${NC}"
-echo
+  echo -e "${NC}"
+  echo -e "${MAGENTA}╔════════════════════════════════════════════════╗${NC}"
+  echo -e "${MAGENTA}║${NC}  ${WHITE}Dotfiles Installer for Ubuntu 24.04 LTS${NC}    ${MAGENTA}║${NC}"
+  echo -e "${MAGENTA}║${NC}  ${CYAN}Automated setup for your dev environment${NC}   ${MAGENTA}║${NC}"
+  echo -e "${MAGENTA}╚════════════════════════════════════════════════╝${NC}"
+  echo
+else
+  echo "Dotfiles Installer for Ubuntu 24.04 LTS"
+  echo "========================================"
+  echo
+fi
 
 # Ensure all scripts in the scripts/ directory are executable
-chmod +x scripts/*.sh >/dev/null 2>&1
+chmod +x scripts/*.sh >/dev/null 2>&1 || true
 
 # Run all pre-installation checks
-echo -e "${YELLOW}[→]${NC} Running pre-installation checks..."
+print_info "Running pre-installation checks..."
 bash scripts/preflight.sh
 
 # Confirm before proceeding
 echo
 if [ "${ASSUME_YES:-0}" -eq 1 ] || [ -n "${CI:-}" ]; then
-  echo -e "${GREEN}[✓]${NC} Proceeding non-interactively"
+  print_success "Proceeding non-interactively"
 else
-  echo -e "${YELLOW}[!]${NC} This installer will modify your system and install packages."
+  print_warning "This installer will modify your system and install packages."
   read -rp "Do you want to continue? [y/N] " answer
   if [[ ! $answer =~ ^[Yy]$ ]]; then
-      echo -e "${RED}[✗]${NC} Installation aborted. No changes were made."
+      print_error "Installation aborted. No changes were made."
       exit 1
   fi
 fi
 
 # --- System Package Installation ---
 echo
-echo -e "${CYAN}╔════════════════════════════════════════════════╗${NC}"
-echo -e "${CYAN}║${NC}  ${WHITE}Installing System Packages${NC}                   ${CYAN}║${NC}"
-echo -e "${CYAN}╚════════════════════════════════════════════════╝${NC}"
-echo -e "${YELLOW}[→]${NC} Updating package lists..."
+print_header "Installing System Packages"
+print_info "Updating package lists..."
 if [ "$DRY_RUN" -eq 1 ]; then
   echo "DRY-RUN: would run 'sudo apt-get update'"
 else
@@ -93,52 +152,50 @@ else
   sudo apt-get update
 fi
 
-echo -e "${YELLOW}[→]${NC} Installing packages from packages/apt.txt..."
+print_info "Installing packages from packages/apt.txt..."
 if [ "$DRY_RUN" -eq 1 ]; then
   echo "DRY-RUN: would install packages listed in packages/apt.txt"
 else
   PACKAGES=$(grep -vE '^\s*#|^\s*$' packages/apt.txt || true)
   if [ -n "${PACKAGES:-}" ]; then
     echo "$PACKAGES" | xargs sudo apt-get install -y --no-install-recommends
-    echo -e "${GREEN}[✓]${NC} Packages installed successfully"
+    print_success "Packages installed successfully"
   else
-    echo -e "${YELLOW}[!]${NC} No packages to install"
+    print_warning "No packages to install"
   fi
 fi
 echo
 
 # --- Post-installation Setup ---
-echo -e "${CYAN}╔════════════════════════════════════════════════╗${NC}"
-echo -e "${CYAN}║${NC}  ${WHITE}Installing Development Tools${NC}                 ${CYAN}║${NC}"
-echo -e "${CYAN}╚════════════════════════════════════════════════╝${NC}"
+print_header "Installing Development Tools"
 
 # Link fd-find to fd if it exists
 if command -v fdfind &> /dev/null; then
-    echo -e "${YELLOW}[→]${NC} Linking fdfind to fd..."
+    print_info "Linking fdfind to fd..."
     sudo ln -sf "$(which fdfind)" /usr/local/bin/fd
-    echo -e "${GREEN}[✓]${NC} fd linked successfully"
+    print_success "fd linked successfully"
 fi
 
 # Run individual component installers
 echo
-echo -e "${YELLOW}[→]${NC} Installing Neovim..."
+print_info "Installing Neovim..."
 bash scripts/install-neovim.sh
-echo -e "${GREEN}[✓]${NC} Neovim installed"
+print_success "Neovim installed"
 
 echo
-echo -e "${YELLOW}[→]${NC} Installing Nerd Fonts..."
+print_info "Installing Nerd Fonts..."
 bash scripts/install-nerd-fonts.sh
-echo -e "${GREEN}[✓]${NC} Nerd Fonts installed"
+print_success "Nerd Fonts installed"
 
 echo
-echo -e "${YELLOW}[→]${NC} Setting up LazyVim..."
+print_info "Setting up LazyVim..."
 bash scripts/install-lazyvim.sh
-echo -e "${GREEN}[✓]${NC} LazyVim configured"
+print_success "LazyVim configured"
 
 echo
-echo -e "${YELLOW}[→]${NC} Installing Node.js..."
+print_info "Installing Node.js..."
 bash scripts/install-nodejs.sh
-echo -e "${GREEN}[✓]${NC} Node.js installed"
+print_success "Node.js installed"
 
 # Apply dotfiles configuration using Stow
 echo "  -> Applying configuration files with Stow..."
@@ -260,9 +317,7 @@ fi
 # --- Post-Installation Verification ---
 if [ "$DRY_RUN" -eq 0 ]; then
   echo
-  echo -e "${CYAN}╔════════════════════════════════════════════════╗${NC}"
-  echo -e "${CYAN}║${NC}  ${WHITE}Verifying Installation${NC}                      ${CYAN}║${NC}"
-  echo -e "${CYAN}╚════════════════════════════════════════════════╝${NC}"
+  print_header "Verifying Installation"
   if [ -f "scripts/verify-install.sh" ]; then
     bash scripts/verify-install.sh || true
   fi
@@ -271,16 +326,14 @@ fi
 # --- Git User Configuration ---
 if [ "$DRY_RUN" -eq 0 ]; then
   echo
-  echo -e "${CYAN}╔════════════════════════════════════════════════╗${NC}"
-  echo -e "${CYAN}║${NC}  ${WHITE}Git Configuration${NC}                           ${CYAN}║${NC}"
-  echo -e "${CYAN}╚════════════════════════════════════════════════╝${NC}"
+  print_header "Git Configuration"
   CURRENT_GIT_NAME=$(git config --global user.name 2>/dev/null || echo "")
   CURRENT_GIT_EMAIL=$(git config --global user.email 2>/dev/null || echo "")
   
   if [ -z "$CURRENT_GIT_NAME" ] || [ -z "$CURRENT_GIT_EMAIL" ]; then
-    echo -e "${YELLOW}[!]${NC} Git user information is not configured"
+    print_warning "Git user information is not configured"
     if [ "${ASSUME_YES:-0}" -eq 1 ] || [ -n "${CI:-}" ]; then
-      echo -e "${YELLOW}[!]${NC} Skipping Git configuration in non-interactive mode"
+      print_warning "Skipping Git configuration in non-interactive mode"
       echo "Run 'bash scripts/setup-git-user.sh' later to configure."
     else
       echo
@@ -288,12 +341,12 @@ if [ "$DRY_RUN" -eq 0 ]; then
       if [[ ! $setup_git =~ ^[Nn]$ ]]; then
         bash scripts/setup-git-user.sh
       else
-        echo -e "${YELLOW}[!]${NC} You can configure Git later:"
+        print_warning "You can configure Git later:"
         echo "  bash scripts/setup-git-user.sh"
       fi
     fi
   else
-    echo -e "${GREEN}[✓]${NC} Git is already configured:"
+    print_success "Git is already configured:"
     echo "  Name:  $CURRENT_GIT_NAME"
     echo "  Email: $CURRENT_GIT_EMAIL"
   fi
@@ -301,29 +354,32 @@ fi
 
 # --- Final Instructions ---
 echo
-echo -e "${GREEN}╔════════════════════════════════════════════════╗${NC}"
-echo -e "${GREEN}║${NC}  ${WHITE}Installation Complete!${NC}                      ${GREEN}║${NC}"
-echo -e "${GREEN}╚════════════════════════════════════════════════╝${NC}"
+if [ -n "${GREEN:-}" ]; then
+  echo -e "${GREEN}╔════════════════════════════════════════════════╗${NC}"
+  echo -e "${GREEN}║${NC}  ${WHITE}Installation Complete!${NC}                      ${GREEN}║${NC}"
+  echo -e "${GREEN}╚════════════════════════════════════════════════╝${NC}"
+else
+  echo "Installation Complete!"
+  echo "======================"
+fi
 echo
-echo -e "${CYAN}Backup manifest:${NC} $BACKUP_MANIFEST"
+echo "Backup manifest: $BACKUP_MANIFEST"
 echo
-echo -e "${WHITE}Next steps:${NC}"
-echo -e "  ${YELLOW}1.${NC} Restart your terminal:"
-echo -e "     ${CYAN}source ~/.bashrc${NC}"
+echo "Next steps:"
+echo "  1. Restart your terminal:"
+echo "     source ~/.bashrc"
 echo
-echo -e "  ${YELLOW}2.${NC} Launch Neovim to complete LazyVim setup:"
-echo -e "     ${CYAN}nvim${NC}"
-echo -e "     (Wait for plugins to install, then restart)"
+echo "  2. Launch Neovim to complete LazyVim setup:"
+echo "     nvim"
 echo
-echo -e "  ${YELLOW}3.${NC} If you skipped Git configuration:"
-echo -e "     ${CYAN}bash scripts/setup-git-user.sh${NC}"
+echo "  3. If you skipped Git configuration:"
+echo "     bash scripts/setup-git-user.sh"
 echo
-echo -e "  ${YELLOW}4.${NC} Test your new environment:"
-echo -e "     ${CYAN}tmux${NC}              # Terminal multiplexer"
-echo -e "     ${CYAN}Ctrl+T${NC}            # Find files (FZF)"
-echo -e "     ${CYAN}Ctrl+R${NC}            # Search history (FZF)"
-echo -e "     ${CYAN}git aliases${NC}       # Show Git shortcuts"
+echo "  4. Test your new environment:"
+echo "     tmux              # Terminal multiplexer"
+echo "     Ctrl+T            # Find files (FZF)"
+echo "     git aliases       # Show Git shortcuts"
 echo
-echo -e "${MAGENTA}For help:${NC} docs/QUICK_START.md"
-echo -e "${MAGENTA}Rollback:${NC} ./scripts/rollback.sh"
+echo "For help: docs/QUICK_START.md"
+echo "Rollback: ./scripts/rollback.sh"
 echo
