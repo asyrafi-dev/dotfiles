@@ -42,7 +42,7 @@ jobs:
       # This matrix strategy tells GitHub Actions to run a copy of this job for each
       # Ubuntu version listed below. This ensures broad compatibility.
       matrix:
-        ubuntu-version: [ubuntu-22.04, ubuntu-24.04]
+        ubuntu-version: [ubuntu-24.04]
 
     steps:
       - name: Check out repository code
@@ -52,7 +52,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /var/cache/apt/archives
-          key: ${{ runner.os }}-apt-${{ hashFiles('**/packages.apt.txt') }}
+          key: ${{ runner.os }}-apt-${{ hashFiles('**/packages/apt.txt') }}
           restore-keys: |
             ${{ runner.os }}-apt-
 
@@ -60,10 +60,13 @@ jobs:
         run: chmod +x install.sh scripts/*.sh
 
       - name: Execute installation script
-        run: ./install.sh
+        run: bash -ex ./install.sh
 
       - name: Verify Neovim installation
         run: nvim --version
 
       - name: Verify Stow installation
         run: stow --version
+      
+      - name: Verify Tmux installation
+        run: tmux -V
