@@ -77,6 +77,7 @@ else
     echo "  -> No packages to install (packages/apt.txt is empty or missing)."
   fi
 fi
+echo
 
 # --- Post-installation Setup ---
 echo "[+] Performing post-installation setup..."
@@ -209,13 +210,38 @@ else
   fi
 fi
 
+# --- Post-Installation Verification ---
+if [ "$DRY_RUN" -eq 0 ]; then
+  echo
+  echo "[+] Running post-installation verification..."
+  if [ -f "scripts/verify-install.sh" ]; then
+    bash scripts/verify-install.sh || true
+  fi
+fi
+
 # --- Final Instructions ---
 echo
 echo "--------------------------------------------------"
 echo "Installation Complete"
 echo "--------------------------------------------------"
 echo
+echo "Backup manifest saved to: $BACKUP_MANIFEST"
+echo
 echo "Next steps:"
-echo "1. Restart your terminal for all changes to take effect."
-echo "2. After restarting, launch 'nvim' to allow LazyVim to complete its plugin setup."
+echo "1. Restart your terminal for all changes to take effect:"
+echo "   source ~/.bashrc"
+echo
+echo "2. After restarting, launch 'nvim' to allow LazyVim to complete its plugin setup:"
+echo "   nvim"
+echo
+echo "3. Configure your Git identity (IMPORTANT!):"
+echo "   git config --global user.name \"Your Name\""
+echo "   git config --global user.email \"you@email.com\""
+echo
+echo "4. Test your setup:"
+echo "   - Tmux: tmux"
+echo "   - FZF: Ctrl+T (fuzzy find files)"
+echo "   - Ripgrep: rg 'search term'"
+echo
+echo "If you encounter any issues, run: ./scripts/rollback.sh"
 echo

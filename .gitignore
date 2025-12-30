@@ -1,0 +1,27 @@
+# Logs
+*.log
+install.log
+stow-preview.txt
+
+# Backup files
+*.bak
+*.backup
+.dotfiles_backups_*
+
+# Temporary files
+/tmp/
+*.tmp
+*.swp
+*.swo
+*~
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Test artifacts
+tests/*.log

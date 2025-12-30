@@ -3,4 +3,25 @@
   email = you@email.com
 [core]
   editor = nvim
-
+  autocrlf = input
+[init]
+  defaultBranch = main
+[pull]
+  rebase = false
+[push]
+  default = simple
+[alias]
+  st = status
+  co = checkout
+  br = branch
+  ci = commit
+  unstage = reset HEAD --
+  last = log -1 HEAD
+  lg = log --oneline --graph --decorate --all
+[color]
+  ui = auto
+[diff]
+  tool = nvimdiff
+[merge]
+  tool = nvimdiff
+  conflictstyle = diff3

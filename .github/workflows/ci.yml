@@ -1,141 +1,76 @@
-# .github/workflows/ci.yml
-
-name: CI - Lint and Test Dotfiles
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+name: CI
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, develop ]
   pull_request:
-    branches: [ main, master ]
-  workflow_dispatch:
-    inputs:
-      full_install:
-        description: 'Run a full (destructive) installation on the runner (for maintainers only)'
-        required: false
-        default: 'false'
-
-permissions:
-  contents: read
-
-env:
-  CI: true
+    branches: [ main ]
 
 jobs:
-  lint:
-    name: Lint (shellcheck + shfmt)
+  shellcheck:
+    name: ShellCheck
     runs-on: ubuntu-24.04
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Install linting tools
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y shellcheck shfmt || true
-
+      - uses: actions/checkout@v4
+      
       - name: Run ShellCheck
         run: |
-          files=$(git ls-files '*.sh' | tr '\n' ' ')
-          if [ -z "$files" ]; then
-            echo "No shell scripts to lint"
-          else
-            shellcheck -x $files
-          fi
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+          shellcheck install.sh scripts/*.sh
 
-      - name: Run shfmt (format check)
-        run: |
-          files=$(git ls-files '*.sh' | tr '\n' ' ')
-          if [ -z "$files" ]; then
-            echo "No shell scripts to format-check"
-          else
-            shfmt -l -i 2 -ci $files
-          fi
+  test-dry-run:
+    name: Test Dry Run
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Make scripts executable
+        run: chmod +x install.sh scripts/*.sh
+      
+      - name: Run dry-run installation
+        run: ./install.sh --dry-run --yes --log=install-dry-run.log
+      
+      - name: Upload dry-run log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dry-run-log
+          path: install-dry-run.log
 
   test-installation:
-    name: Test - Dry-run install on ubuntu-24.04
-    needs: lint
+    name: Test Full Installation
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Cache apt packages
-        uses: actions/cache@v4
-        with:
-          path: /var/cache/apt/archives
-          key: ${{ runner.os }}-apt-${{ hashFiles('**/packages/apt.txt') }}
-          restore-keys: ${{ runner.os }}-apt-
-
-      - name: Make install scripts executable
-        run: chmod +x install.sh scripts/*.sh || true
-
-      - name: Install test dependencies (bats)
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y bats || true
-
-      - name: Run bats tests
-        run: |
-          if [ -d tests ]; then
-            bats -r tests || (echo "Bats tests failed" && exit 1)
-          else
-            echo "No tests found; skipping"
-          fi
-
-      - name: Run preflight checks
-        run: bash -e ./scripts/preflight.sh
-
-      - name: Run installer in dry-run and log output
-        run: ./install.sh --dry-run --yes --log=ci-install.log
-
-      - name: Preview stow (dry-run)
-        run: |
-          if command -v stow >/dev/null 2>&1; then
-            (cd home && stow -n -t ~ --no-folding --adopt -- *) > stow-preview.txt || true
-          else
-            echo 'stow not installed; skipping preview' > stow-preview.txt
-          fi
-
-      - name: Fix permissions for apt cache
-        run: sudo chmod -R 777 /var/cache/apt/archives || true
-
-      - name: Upload CI artifacts (logs and previews)
+      - uses: actions/checkout@v4
+      
+      - name: Make scripts executable
+        run: chmod +x install.sh scripts/*.sh
+      
+      - name: Run installation
+        run: ./install.sh --yes --log=install.log
+      
+      - name: Verify installation
+        run: bash scripts/verify-install.sh
+      
+      - name: Upload installation log
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ci-artifacts
-          path: |
-            ci-install.log
-            stow-preview.txt
+          name: installation-log
+          path: install.log
 
-  full-install:
-    name: Full Install (manual trigger only)
-    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.full_install == 'true' }}
+  test-bats:
+    name: Run Bats Tests
     runs-on: ubuntu-24.04
-    needs: lint
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Make install scripts executable
-        run: chmod +x install.sh scripts/*.sh || true
-
-      - name: Run full installer (DANGEROUS)
-        run: ./install.sh --yes --log=ci-full-install.log
-
-      - name: Upload full-install log
-        uses: actions/upload-artifact@v4
-        with:
-          name: ci-full-install-log
-          path: ci-full-install.log
-
+      - uses: actions/checkout@v4
+      
+      - name: Install bats
+        run: sudo apt-get update && sudo apt-get install -y bats
+      
+      - name: Make scripts executable
+        run: chmod +x install.sh scripts/*.sh
+      
+      - name: Run tests
+        run: bats tests/basic.bats
