@@ -1,19 +1,19 @@
-# Customization Guide
+# Customization
 
-## Git Configuration
+## Git Setup
 
-### Interactive Setup
+### Interactive
 ```bash
 bash scripts/setup-git-user.sh
 ```
 
-### Manual Setup
+### Manual
 ```bash
 git config --global user.name "Your Name"
 git config --global user.email "your.email@example.com"
 ```
 
-## Package Management
+## Packages
 
 ### Add Packages
 Edit `packages/apt.txt`:
@@ -21,19 +21,19 @@ Edit `packages/apt.txt`:
 nano packages/apt.txt
 ```
 
-Add package names (one per line), then re-run:
+Add package names (one per line), then:
 ```bash
 ./install.sh
 ```
 
-## Bash Customization
+## Bash
 
 Edit `~/.bashrc`:
 ```bash
 nvim ~/.bashrc
 ```
 
-Add custom aliases:
+Add aliases:
 ```bash
 alias update='sudo apt update && sudo apt upgrade -y'
 alias myproject='cd ~/projects/myproject'
@@ -44,14 +44,14 @@ Reload:
 source ~/.bashrc
 ```
 
-## Git Customization
+## Git
 
 Edit `~/.gitconfig`:
 ```bash
 nvim ~/.gitconfig
 ```
 
-Add custom aliases:
+Add aliases:
 ```ini
 [alias]
   pushf = push --force-with-lease
@@ -59,14 +59,14 @@ Add custom aliases:
   undo = reset HEAD~1 --soft
 ```
 
-## Tmux Customization
+## Tmux
 
 Edit `~/.tmux.conf`:
 ```bash
 nvim ~/.tmux.conf
 ```
 
-Change prefix key (uncomment these lines):
+Change prefix (uncomment):
 ```bash
 unbind C-b
 set -g prefix C-a
@@ -78,7 +78,7 @@ Reload:
 tmux source-file ~/.tmux.conf
 ```
 
-## Neovim Customization
+## Neovim
 
 ### Add Plugins
 
@@ -90,30 +90,28 @@ return {
 }
 ```
 
-Restart Neovim to install.
+Restart Neovim.
 
-### Change Colorscheme
+### Change Theme
 
 Edit `~/.config/nvim/lua/config/options.lua`:
 ```lua
 vim.cmd[[colorscheme tokyonight]]
 ```
 
-### Documentation
+See [LazyVim docs](https://www.lazyvim.org/) for more.
 
-See [LazyVim docs](https://www.lazyvim.org/) for more customization options.
-
-## Font Configuration
+## Fonts
 
 ### Change Terminal Font
 
 1. Open terminal preferences
-2. Select a Nerd Font (Hack, JetBrains Mono, Fira Code)
+2. Select Nerd Font (Hack, JetBrains Mono, Fira Code)
 3. Restart terminal
 
-### Install Additional Fonts
+### Add More Fonts
 
-Edit `scripts/install-nerd-fonts.sh` and add to `FONTS` array:
+Edit `scripts/install-nerd-fonts.sh`:
 ```bash
 ["FontName"]="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/FontName.zip"
 ```
@@ -123,13 +121,13 @@ Run:
 bash scripts/install-nerd-fonts.sh
 ```
 
-## Backup Customizations
+## Backup
 
-Commit and push your changes:
+Commit your changes:
 ```bash
 cd ~/dotfiles
 git add .
-git commit -m "Personal customizations"
+git commit -m "My customizations"
 git push
 ```
 
@@ -141,9 +139,9 @@ cd ~/dotfiles
 ./install.sh
 ```
 
-## Reset to Defaults
+## Reset
 
-### Rollback All Changes
+### Rollback
 ```bash
 ./scripts/rollback.sh
 ```

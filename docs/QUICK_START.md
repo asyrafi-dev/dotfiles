@@ -9,12 +9,12 @@ chmod +x install.sh scripts/*.sh
 ./install.sh
 ```
 
-## Post-Installation
+## After Install
 
 ```bash
 source ~/.bashrc                    # Reload terminal
-nvim                                # Setup Neovim plugins
-bash scripts/setup-git-user.sh      # Configure Git (if skipped)
+nvim                                # Setup plugins
+bash scripts/setup-git-user.sh      # Configure Git if skipped
 ```
 
 ## Make Commands
@@ -22,10 +22,10 @@ bash scripts/setup-git-user.sh      # Configure Git (if skipped)
 ```bash
 make install      # Install dotfiles
 make dry-run      # Preview changes
-make verify       # Verify installation
+make verify       # Check installation
 make setup-git    # Configure Git
 make test         # Run tests
-make clean        # Clean generated files
+make clean        # Clean files
 ```
 
 ## Keybindings
@@ -46,18 +46,18 @@ Ctrl+R          Search history
 Alt+C           Change directory
 ```
 
-### Bash Aliases
+### Bash
 ```bash
-ll              # List all files
+ll              # List all
 gs              # Git status
 ga .            # Git add all
 gc              # Git commit
 gp              # Git push
-gl              # Git log graph
+gl              # Git log
 vim             # Neovim
 ```
 
-### Git Aliases
+### Git
 ```bash
 git st          # Status
 git cm "msg"    # Commit
@@ -69,13 +69,13 @@ git undo        # Undo commit
 git aliases     # Show all
 ```
 
-## Configuration Files
+## Config Files
 
 ```
-~/.bashrc           Bash configuration
-~/.gitconfig        Git configuration
-~/.tmux.conf        Tmux configuration
-~/.config/nvim/     Neovim configuration
+~/.bashrc           Bash
+~/.gitconfig        Git
+~/.tmux.conf        Tmux
+~/.config/nvim/     Neovim
 ```
 
 ## Common Tasks
@@ -96,7 +96,7 @@ nano packages/apt.txt
 ./scripts/rollback.sh
 ```
 
-### Verify Installation
+### Verify
 ```bash
 bash scripts/verify-install.sh
 ```

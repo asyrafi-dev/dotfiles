@@ -1,4 +1,4 @@
-# Troubleshooting Guide
+# Troubleshooting
 
 ## Neovim Issues
 
@@ -6,7 +6,7 @@
 
 **Error**: `fuse: failed to exec fusermount`
 
-**Solution**:
+**Fix**:
 ```bash
 sudo apt-get install fuse libfuse2
 sudo modprobe fuse
@@ -25,38 +25,35 @@ sudo ln -sf /opt/nvim/AppRun /usr/local/bin/nvim
 
 ## Font Issues
 
-### Fonts not appearing
+### Fonts not showing
 
 ```bash
-# Rebuild font cache
 fc-cache -fv
-
-# Verify fonts installed
-fc-list | grep -i "nerd"
-
-# Restart terminal or logout/login
+# Restart terminal
 ```
 
-### Terminal not using Nerd Font
+Verify:
+```bash
+fc-list | grep -i "nerd"
+```
+
+### Terminal not using font
 
 1. Open terminal preferences
-2. Select a Nerd Font (e.g., "Hack Nerd Font")
+2. Select Nerd Font
 3. Restart terminal
 
 ## Stow Issues
 
-### Conflicts detected
+### Conflicts
 
-**Error**: `WARNING: in simulation mode; no actions taken`
+**Error**: `WARNING: in simulation mode`
 
-**Solution**:
+**Fix**:
 ```bash
-# Backup conflicting files
 mv ~/.bashrc ~/.bashrc.backup
 mv ~/.gitconfig ~/.gitconfig.backup
 mv ~/.tmux.conf ~/.tmux.conf.backup
-
-# Re-run installer
 ./install.sh
 ```
 
@@ -72,80 +69,82 @@ stow -t ~ --no-folding --adopt -- *
 ### Keybindings not working
 
 ```bash
-# Source bashrc again
 source ~/.bashrc
-
 # Or restart terminal
 ```
 
-### FZF not finding files
+### Not finding files
 
 ```bash
-# Check if fd is installed
+# Check fd installed
 which fd
 
-# If not, link fdfind to fd
+# Link if needed
 sudo ln -sf $(which fdfind) /usr/local/bin/fd
 ```
 
 ## Installation Issues
 
-### Package installation fails
+### Package install fails
 
 ```bash
-# Update package lists
 sudo apt-get update
-
-# Fix broken dependencies
 sudo apt-get install -f
-
-# Re-run installer
 ./install.sh
 ```
 
 ### Permission denied
 
 ```bash
-# Make scripts executable
 chmod +x install.sh scripts/*.sh
-
-# Run with proper permissions
 ./install.sh
 ```
 
-### Internet connection issues
+### Internet issues
 
 ```bash
-# Test connectivity
 ping -c 3 google.com
-
-# Check DNS
-cat /etc/resolv.conf
-
-# Try different mirror
 sudo apt-get update
 ```
 
 ## Rollback Issues
 
-### Rollback script fails
+### Script fails
 
 ```bash
-# Find backup manifest
+# Find backup
 ls -la ~/.dotfiles_backups_*
 
-# Manually restore
+# Manual restore
 mv ~/.bashrc.bak.TIMESTAMP ~/.bashrc
 mv ~/.config/nvim.bak.TIMESTAMP ~/.config/nvim
 ```
 
+## Git Issues
+
+### "Please tell me who you are"
+
+```bash
+bash scripts/setup-git-user.sh
+```
+
+### "Not a git repository"
+
+```bash
+git init
+```
+
+### Branch ahead/behind
+
+```bash
+git push    # If ahead
+git pull    # If behind
+```
+
 ## Getting Help
 
-If issues persist:
-1. Check logs: `cat install.log`
-2. Run dry-run: `./install.sh --dry-run`
-3. Verify system: `bash scripts/verify-install.sh`
-4. Open an issue on GitHub with:
-   - Ubuntu version: `lsb_release -a`
-   - Error messages
-   - Steps to reproduce
+1. Check error message
+2. Read this guide
+3. Check logs: `cat install.log`
+4. Run dry-run: `./install.sh --dry-run`
+5. Open issue on GitHub
