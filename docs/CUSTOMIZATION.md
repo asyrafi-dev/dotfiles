@@ -46,6 +46,46 @@ alias update='sudo apt update && sudo apt upgrade -y'
 alias myproject='cd ~/projects/myproject'
 ```
 
+### Built-in Aliases
+
+The dotfiles include many useful aliases:
+
+```bash
+# Navigation
+..              # cd ..
+...             # cd ../..
+....            # cd ../../..
+
+# Files
+ll              # ls -alF
+la              # ls -A
+lt              # ls -ltrh (by time)
+lsize           # ls -lSrh (by size)
+
+# Git
+gs              # git status
+ga              # git add
+gc              # git commit
+gp              # git push
+gl              # git log --oneline --graph
+lg              # lazygit
+
+# System
+update          # apt update && upgrade
+cleanup         # apt autoremove && autoclean
+myip            # show public IP
+
+# Editor
+vim, vi, v      # nvim
+```
+
+### Built-in Functions
+
+```bash
+mkcd dirname    # Create and enter directory
+extract file    # Extract any archive format
+```
+
 Reload:
 
 ```bash
@@ -77,12 +117,42 @@ Edit `~/.tmux.conf`:
 nvim ~/.tmux.conf
 ```
 
-Change prefix (uncomment):
+### Built-in Features
+
+The dotfiles include an enhanced tmux config:
+
+- True color support (works with Kitty and LazyVim)
+- Vi-style copy mode with clipboard integration
+- Mouse support
+- Better status bar styling
+- Pane resize with Ctrl+Arrow
+
+### Change prefix (uncomment in config):
 
 ```bash
 unbind C-b
 set -g prefix C-a
 bind C-a send-prefix
+```
+
+### Key Bindings
+
+```
+Ctrl+b |        Split vertical (in current path)
+Ctrl+b -        Split horizontal (in current path)
+Ctrl+b c        New window (in current path)
+Alt+Arrow       Navigate panes
+Ctrl+Arrow      Resize panes
+Ctrl+b r        Reload config
+```
+
+### Copy Mode (vi-style)
+
+```
+Ctrl+b [        Enter copy mode
+v               Start selection
+y               Copy to clipboard
+q               Exit copy mode
 ```
 
 Reload:
@@ -115,6 +185,47 @@ vim.cmd[[colorscheme tokyonight]]
 ```
 
 See [LazyVim docs](https://www.lazyvim.org/) for more.
+
+## Kitty Terminal
+
+Edit `~/.config/kitty/kitty.conf`:
+
+```bash
+nvim ~/.config/kitty/kitty.conf
+```
+
+### Change Font
+
+```conf
+font_family      JetBrainsMono Nerd Font
+font_size 14.0
+```
+
+### Change Theme
+
+The default theme is Tokyo Night. To change:
+
+```conf
+# Catppuccin Mocha
+foreground #cdd6f4
+background #1e1e2e
+```
+
+### Useful Settings
+
+```conf
+# Transparency
+background_opacity 0.95
+
+# Cursor
+cursor_shape beam
+cursor_blink_interval 0.5
+
+# Window
+hide_window_decorations yes
+```
+
+Reload Kitty: `Ctrl+Shift+F5`
 
 ## Node.js
 
@@ -205,10 +316,51 @@ cd ~/dotfiles
 ./scripts/rollback.sh
 ```
 
+### Uninstall
+
+```bash
+./scripts/uninstall.sh
+```
+
 ### Fresh Install
 
 ```bash
 cd ~/dotfiles
 git pull origin main
 ./install.sh
+```
+
+## System Maintenance
+
+### Update Everything
+
+```bash
+make update
+# Or
+~/bin/update-system.sh
+```
+
+This updates:
+- System packages (apt)
+- Neovim plugins (Lazy)
+- npm global packages
+- Bun runtime
+
+### Manual Updates
+
+```bash
+# System packages
+sudo apt update && sudo apt upgrade -y
+
+# Neovim plugins
+nvim --headless "+Lazy! sync" +qa
+
+# npm packages
+npm update -g
+
+# Bun
+bun upgrade
+
+# NVM
+nvm install node --reinstall-packages-from=node
 ```

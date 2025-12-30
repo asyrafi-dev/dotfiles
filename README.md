@@ -52,6 +52,9 @@ make install      # Install everything
 make dry-run      # Preview changes
 make verify       # Check installation
 make setup-git    # Configure Git
+make update       # Update system and tools
+make rollback     # Restore previous config
+make uninstall    # Remove dotfiles
 ```
 
 ## After Installation
@@ -185,14 +188,20 @@ Alt+C           Change directory
 ### Bash Aliases
 ```bash
 ll              # List all files
+la              # List hidden files
+lt              # List by time
 gs              # Git status
 ga .            # Git add all
 gc              # Git commit
 gp              # Git push
 gl              # Git log graph
+lg              # LazyGit
 vim             # Opens Neovim
-node            # Node.js REPL
-npm             # Node package manager
+v               # Opens Neovim (short)
+update          # Update system
+c               # Clear screen
+..              # Go up one directory
+...             # Go up two directories
 ```
 
 ### Git Aliases
@@ -214,7 +223,31 @@ Files are automatically backed up before changes. To rollback:
 
 ```bash
 ./scripts/rollback.sh
+# Or
+make rollback
 ```
+
+## Uninstall
+
+To completely remove dotfiles from your system:
+
+```bash
+./scripts/uninstall.sh
+# Or
+make uninstall
+```
+
+## Update
+
+Keep your system and tools up to date:
+
+```bash
+make update
+# Or
+~/bin/update-system.sh
+```
+
+This updates: apt packages, Neovim plugins, npm packages, and Bun.
 
 ## Options
 

@@ -1,4 +1,4 @@
-.PHONY: help install dry-run verify test clean shellcheck setup-git rollback
+.PHONY: help install dry-run verify test clean shellcheck setup-git rollback uninstall update
 
 help:
 	@echo "Dotfiles Makefile"
@@ -9,6 +9,8 @@ help:
 	@echo "  make verify      - Verify installation"
 	@echo "  make setup-git   - Configure Git user information"
 	@echo "  make rollback    - Rollback to previous configuration"
+	@echo "  make uninstall   - Remove dotfiles from system"
+	@echo "  make update      - Update system and tools"
 	@echo "  make test        - Run tests"
 	@echo "  make shellcheck  - Run ShellCheck on all scripts"
 	@echo "  make clean       - Remove generated files"
@@ -33,6 +35,14 @@ setup-git:
 rollback:
 	@chmod +x scripts/rollback.sh
 	@bash scripts/rollback.sh
+
+uninstall:
+	@chmod +x scripts/uninstall.sh
+	@bash scripts/uninstall.sh
+
+update:
+	@chmod +x home/bin/update-system.sh
+	@bash home/bin/update-system.sh
 
 test:
 	@chmod +x install.sh scripts/*.sh

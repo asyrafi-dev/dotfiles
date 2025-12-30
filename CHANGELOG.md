@@ -7,7 +7,7 @@ All notable changes to this project.
 ### Added
 
 - Kitty terminal installer (GPU-accelerated, recommended for LazyVim)
-- Kitty configuration file with optimized settings for LazyVim
+- Kitty configuration file with Tokyo Night theme and optimized settings
 - Complete LazyVim requirements (tree-sitter, gcc, clipboard tools)
 - LazyGit installer from GitHub releases (latest version)
 - Python packages installer (pynvim for Neovim Python support)
@@ -24,9 +24,15 @@ All notable changes to this project.
 - Smart CI mode detection (safe for users, works in GitHub Actions)
 - Error traps in all scripts for consistent error handling
 - Improved test coverage (9 tests)
-- Makefile rollback target
+- Makefile targets: rollback, uninstall, update
+- Uninstall script for clean removal
+- Update script for system maintenance
 - .editorconfig for consistent coding styles
 - .gitattributes for line ending consistency
+- Enhanced bashrc with 40+ aliases and utility functions
+- Enhanced tmux config with true color, vi-copy mode, better styling
+- FZF Tokyo Night color scheme integration
+- Utility functions: mkcd, extract
 
 ### Changed
 
@@ -35,10 +41,13 @@ All notable changes to this project.
 - Improved error handling across all scripts
 - Better backup system with manifest tracking
 - Enhanced package list with all LazyVim dependencies
-- Verification script now checks all LazyVim requirements
+- Verification script now checks all LazyVim requirements including Kitty config
 - Installation order optimized (Kitty → Neovim → Fonts → LazyGit → LazyVim → Node.js → Python → Bun)
 - Documentation improved with complete installation notes
 - CI workflow updated with comprehensive testing
+- Bashrc enhanced with more aliases, functions, and better history
+- Tmux config improved with true color support, vi-copy mode, and modern styling
+- Update script now updates Neovim plugins, npm packages, and Bun
 
 ### Fixed
 

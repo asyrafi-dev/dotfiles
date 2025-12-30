@@ -174,6 +174,7 @@ check_file "$HOME/.bashrc" "~/.bashrc"
 check_file "$HOME/.gitconfig" "~/.gitconfig"
 check_file "$HOME/.tmux.conf" "~/.tmux.conf"
 check_file "$HOME/.config/nvim/init.lua" "~/.config/nvim/init.lua"
+check_file "$HOME/.config/kitty/kitty.conf" "~/.config/kitty/kitty.conf"
 echo
 
 echo "[6] Checking Symlinks (Stow)..."

@@ -145,17 +145,19 @@ bun add react           # Add package
 bun create next myapp   # Create new project
 ```
 
-### Add Packages
-
-```bash
-bash scripts/setup-git-user.sh
-```
-
-### Add Packages
+### Add System Packages
 
 ```bash
 nano packages/apt.txt
 ./install.sh
+```
+
+### Update System
+
+```bash
+make update             # Update everything
+# Or manually:
+~/bin/update-system.sh
 ```
 
 ### Rollback
@@ -168,4 +170,12 @@ nano packages/apt.txt
 
 ```bash
 bash scripts/verify-install.sh
+```
+
+### Uninstall
+
+```bash
+make uninstall          # Remove dotfiles
+# Or manually:
+bash scripts/uninstall.sh
 ```
