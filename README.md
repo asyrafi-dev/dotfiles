@@ -93,10 +93,11 @@ nano packages/apt.txt
 ### Edit Dotfiles
 
 All configs are in your home directory:
-- `~/.bashrc` - Bash (includes NVM)
+- `~/.bashrc` - Bash (includes NVM and Bun)
 - `~/.gitconfig` - Git
 - `~/.tmux.conf` - Tmux
 - `~/.config/nvim/` - Neovim
+- `~/.config/kitty/kitty.conf` - Kitty terminal
 
 ### Node.js Management
 

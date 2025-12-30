@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+trap 'echo "Verification error on line $LINENO" >&2; exit 1' ERR
 
 echo "Dotfiles Installation Verification"
 echo "===================================="

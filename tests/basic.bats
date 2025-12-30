@@ -5,7 +5,45 @@
   [ -x ./install.sh ]
 }
 
+@test "all scripts are executable" {
+  for script in scripts/*.sh; do
+    [ -x "$script" ]
+  done
+}
+
 @test "dry-run completes successfully" {
   run ./install.sh --dry-run --yes
   [ "$status" -eq 0 ]
+}
+
+@test "packages/apt.txt exists and is readable" {
+  [ -f packages/apt.txt ]
+  [ -r packages/apt.txt ]
+}
+
+@test "home directory structure exists" {
+  [ -d home/bash ]
+  [ -d home/git ]
+  [ -d home/tmux ]
+  [ -d home/bin ]
+}
+
+@test "dotfiles exist" {
+  [ -f home/bash/.bashrc ]
+  [ -f home/git/.gitconfig ]
+  [ -f home/tmux/.tmux.conf ]
+}
+
+@test "documentation files exist" {
+  [ -f README.md ]
+  [ -f CHANGELOG.md ]
+  [ -f CONTRIBUTING.md ]
+  [ -f LICENSE ]
+}
+
+@test "Makefile has required targets" {
+  grep -q "^install:" Makefile
+  grep -q "^dry-run:" Makefile
+  grep -q "^verify:" Makefile
+  grep -q "^test:" Makefile
 }

@@ -1,2 +1,6 @@
 #!/usr/bin/env bash
-sudo apt update && sudo apt upgrade -y
+set -euo pipefail
+
+echo "Updating system packages..."
+sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y
+echo "System update complete!"

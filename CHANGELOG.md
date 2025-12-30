@@ -7,11 +7,13 @@ All notable changes to this project.
 ### Added
 
 - Kitty terminal installer (GPU-accelerated, recommended for LazyVim)
+- Kitty configuration file with optimized settings for LazyVim
 - Complete LazyVim requirements (tree-sitter, gcc, clipboard tools)
 - LazyGit installer from GitHub releases (latest version)
 - Python packages installer (pynvim for Neovim Python support)
 - Additional LazyVim dependencies (luarocks, imagemagick, sqlite3)
 - npm global packages (tree-sitter-cli, neovim, mermaid-cli)
+- Bun PATH configuration in dotfiles bashrc
 - ASCII art banner with colored output
 - Node.js installer with LTS version selection (18/20/22/24)
 - Bun installer (fast JavaScript runtime and toolkit)
@@ -20,6 +22,9 @@ All notable changes to this project.
 - Comprehensive verification script (all dependencies)
 - Interactive Git user configuration
 - Smart CI mode detection (safe for users, works in GitHub Actions)
+- Error traps in all scripts for consistent error handling
+- Improved test coverage (9 tests)
+- Makefile rollback target
 - .editorconfig for consistent coding styles
 - .gitattributes for line ending consistency
 
