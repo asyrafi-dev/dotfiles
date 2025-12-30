@@ -211,26 +211,13 @@ jobs:
         run: bats tests/basic.bats
 
   test-nodejs-versions:
-    name: 🟢 Node.js ${{ matrix.node_version }} ${{ matrix.node_version == '24' && '(Default)' || '' }}
+    name: 🟢 Node.js ${{ matrix.node_version }}${{ matrix.node_version == '24' && ' (Default)' || '' }}
     runs-on: ubuntu-24.04
     needs: shellcheck
     strategy:
       fail-fast: false
       matrix:
         node_version: ['24', '22', '20', '18']
-        include:
-          - node_version: '24'
-            is_default: true
-            npm_update: true
-          - node_version: '22'
-            is_default: false
-            npm_update: false
-          - node_version: '20'
-            is_default: false
-            npm_update: false
-          - node_version: '18'
-            is_default: false
-            npm_update: false
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -242,7 +229,7 @@ jobs:
         run: |
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo "🟢 Installing Node.js ${{ matrix.node_version }}"
-          if [ "${{ matrix.is_default }}" = "true" ]; then
+          if [ "${{ matrix.node_version }}" = "24" ]; then
             echo "⭐ This is the DEFAULT version"
           fi
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -250,10 +237,12 @@ jobs:
           export CI=true
           export ASSUME_YES=1
           
-          if [ "${{ matrix.node_version }}" = "24" ]; then
-            bash scripts/install-nodejs.sh
+          # Create a temporary modified script for non-default versions
+          if [ "${{ matrix.node_version }}" != "24" ]; then
+            cp scripts/install-nodejs.sh /tmp/install-nodejs-${{ matrix.node_version }}.sh
+            sed -i 's/NODE_VERSION="24"/NODE_VERSION="${{ matrix.node_version }}"/' /tmp/install-nodejs-${{ matrix.node_version }}.sh
+            bash /tmp/install-nodejs-${{ matrix.node_version }}.sh
           else
-            sed -i 's/NODE_VERSION="24"/NODE_VERSION="${{ matrix.node_version }}"/' scripts/install-nodejs.sh
             bash scripts/install-nodejs.sh
           fi
       
@@ -279,7 +268,7 @@ jobs:
           fi
           
           # For Node 24, verify npm is latest
-          if [ "${{ matrix.npm_update }}" = "true" ]; then
+          if [ "${{ matrix.node_version }}" = "24" ]; then
             NPM_MAJOR=$(npm -v | cut -d'.' -f1)
             if [ "$NPM_MAJOR" -ge 11 ]; then
               echo "✅ npm updated to latest for Node.js 24 (v$NPM_MAJOR.x)"
