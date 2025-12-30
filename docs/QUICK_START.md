@@ -3,7 +3,7 @@
 ## Installation
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/dotfiles.git ~/dotfiles
+git clone https://github.com/asyrafi-dev/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 chmod +x install.sh scripts/*.sh
 ./install.sh
@@ -31,6 +31,7 @@ make clean        # Clean files
 ## Keybindings
 
 ### Tmux
+
 ```
 Ctrl+b |        Split vertical
 Ctrl+b -        Split horizontal
@@ -40,6 +41,7 @@ Ctrl+b r        Reload config
 ```
 
 ### FZF
+
 ```
 Ctrl+T          Find files
 Ctrl+R          Search history
@@ -47,6 +49,7 @@ Alt+C           Change directory
 ```
 
 ### Bash
+
 ```bash
 ll              # List all
 gs              # Git status
@@ -58,6 +61,7 @@ vim             # Neovim
 ```
 
 ### Git
+
 ```bash
 git st          # Status
 git cm "msg"    # Commit
@@ -81,22 +85,26 @@ git aliases     # Show all
 ## Common Tasks
 
 ### Configure Git
+
 ```bash
 bash scripts/setup-git-user.sh
 ```
 
 ### Add Packages
+
 ```bash
 nano packages/apt.txt
 ./install.sh
 ```
 
 ### Rollback
+
 ```bash
 ./scripts/rollback.sh
 ```
 
 ### Verify
+
 ```bash
 bash scripts/verify-install.sh
 ```
