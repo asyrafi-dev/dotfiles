@@ -2,16 +2,7 @@
 
 Thanks for your interest in contributing!
 
-## Getting Started
-
-1. Fork the repository
-2. Clone your fork
-3. Create a branch
-4. Make changes
-5. Test thoroughly
-6. Submit pull request
-
-## Development
+## Quick Start
 
 ```bash
 git clone https://github.com/asyrafi-dev/dotfiles.git
@@ -28,10 +19,8 @@ chmod +x install.sh scripts/*.sh
 - Include `set -euo pipefail`
 - Pass ShellCheck validation
 - Add comments for complex logic
-- Follow existing style
 
 Example:
-
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
@@ -47,7 +36,6 @@ my_function() {
 ### Testing
 
 Before submitting:
-
 - Test on Ubuntu 24.04 LTS
 - Run `./install.sh --dry-run`
 - Test full installation
@@ -57,38 +45,31 @@ Before submitting:
 
 ### CI Pipeline
 
-The CI pipeline runs automatically on every push and pull request with comprehensive testing:
+Automated tests run on every push and pull request:
 
-**🚀 Pipeline Jobs:**
+**Jobs:**
+1. ShellCheck Validation - Validates shell script syntax
+2. Dry Run Test - Tests installation preview
+3. Full Installation Test - Complete installation
+4. Bats Test Suite - Automated tests
+5. Node.js Matrix - Tests all LTS versions (24, 22, 20, 18)
+6. Rollback Test - Verifies backup/rollback
+7. CI Summary - Aggregates results
 
-1. **🔍 ShellCheck Validation** - Validates shell script syntax and best practices
-2. **🧪 Dry Run Test** - Tests installation preview without making changes  
-3. **📦 Full Installation Test** - Complete installation with all components
-4. **⚡ Bats Test Suite** - Runs automated test suite
-5. **🟢 Node.js Version Matrix** - Tests all LTS versions in parallel
-   - **Node.js 24 (Default)** ⭐ - npm updated to latest
-   - Node.js 22 - bundled npm
-   - Node.js 20 - bundled npm
-   - Node.js 18 - bundled npm
-6. **⏮️ Rollback Test** - Verifies backup and rollback functionality
-7. **📊 CI Summary** - Aggregates all test results
+**Node.js Testing:**
+- Node.js 24 is default (npm updated to latest)
+- Other versions use bundled npm
+- All versions tested in parallel
+- fail-fast: false ensures complete testing
 
-**Node.js Testing Strategy:**
-- Matrix strategy runs all versions in parallel
-- Node.js 24 is the default and tested first
-- npm is updated to latest (v11.x+) only for Node.js 24
-- Other versions use their bundled npm
-- Each version is independently verified
-- `fail-fast: false` ensures all versions are tested
-
-All tests must pass before merging. The pipeline provides detailed output with emojis and clear formatting for easy debugging.
+All tests must pass before merging.
 
 ## Documentation
 
 - Update README.md for new features
 - Add comments in code
 - Update relevant docs in `docs/`
-- Keep it concise
+- Keep it concise and clear
 
 ## Pull Requests
 
@@ -99,18 +80,17 @@ All tests must pass before merging. The pipeline provides detailed output with e
 
 ## Commit Messages
 
-Use clear messages:
-
+Use clear, descriptive messages:
 ```
 Add support for custom fonts
 Fix stow conflict handling
 Update documentation for rollback
+Improve Node.js installation script
 ```
 
 ## Reporting Issues
 
 Include:
-
 - Ubuntu version
 - Steps to reproduce
 - Expected vs actual behavior
