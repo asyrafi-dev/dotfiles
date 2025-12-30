@@ -267,6 +267,62 @@ Note: npm automatically updated to latest for Node.js 24. Other versions use bun
 
 All versions include tree-sitter-cli installed globally via npm.
 
+## PHP
+
+### Check Version
+
+```bash
+php -v
+php -m                  # List installed modules
+```
+
+### Install Additional Extensions
+
+```bash
+sudo apt install php8.4-redis php8.4-memcached php8.4-imagick
+```
+
+### Composer Commands
+
+```bash
+composer init           # Create new project
+composer install        # Install dependencies
+composer require pkg    # Add package
+composer update         # Update dependencies
+composer dump-autoload  # Regenerate autoloader
+```
+
+### Laravel Development
+
+```bash
+# Create new Laravel project
+composer create-project laravel/laravel myapp
+cd myapp
+
+# Start development server
+php artisan serve
+
+# Common artisan commands
+php artisan make:controller UserController
+php artisan make:model User -m
+php artisan migrate
+```
+
+### PHP Configuration
+
+Edit PHP CLI config:
+```bash
+sudo nvim /etc/php/8.4/cli/php.ini
+```
+
+Common settings:
+```ini
+memory_limit = 512M
+upload_max_filesize = 100M
+post_max_size = 100M
+max_execution_time = 300
+```
+
 ## Fonts
 
 ### Change Terminal Font

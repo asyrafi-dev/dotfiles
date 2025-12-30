@@ -273,6 +273,25 @@ else
 fi
 echo
 
+echo "[11] Checking PHP..."
+if command -v php >/dev/null 2>&1; then
+  PHP_VERSION=$(php -v | head -n 1 | awk '{print $2}')
+  echo "✓ PHP installed: v$PHP_VERSION"
+  
+  # Check Composer
+  if command -v composer >/dev/null 2>&1; then
+    COMPOSER_VERSION=$(composer --version 2>/dev/null | awk '{print $3}')
+    echo "✓ Composer installed: v$COMPOSER_VERSION"
+  else
+    echo "⚠ Composer not found"
+    ((WARNINGS++))
+  fi
+else
+  echo "⚠ PHP not installed"
+  ((WARNINGS++))
+fi
+echo
+
 echo
 echo "Verification Summary"
 echo "===================="

@@ -62,6 +62,7 @@ Automated tests run on every push and pull request:
 - LazyGit (from GitHub releases)
 - Node.js with npm packages (tree-sitter-cli, neovim, mermaid-cli)
 - Python packages (pynvim)
+- PHP 8.4 with Composer
 - Bun runtime
 - All system dependencies (luarocks, imagemagick, sqlite3, etc.)
 

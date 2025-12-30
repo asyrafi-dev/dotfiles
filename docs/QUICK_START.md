@@ -18,6 +18,8 @@ nvim                                # Setup plugins
 node -v && npm -v                   # Verify Node.js and npm
 tree-sitter --version               # Verify tree-sitter
 bun --version                       # Verify Bun
+php -v                              # Verify PHP
+composer --version                  # Verify Composer
 bash scripts/setup-git-user.sh      # Configure Git if skipped
 ```
 
@@ -143,6 +145,16 @@ bun install             # Install dependencies
 bun run dev             # Run dev script
 bun add react           # Add package
 bun create next myapp   # Create new project
+```
+
+### PHP Usage
+```bash
+php -v                  # Check version
+php -m                  # List modules
+composer --version      # Check Composer
+composer init           # Create project
+composer install        # Install dependencies
+php artisan serve       # Laravel dev server
 ```
 
 ### Add System Packages

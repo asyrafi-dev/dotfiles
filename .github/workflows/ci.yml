@@ -112,6 +112,8 @@ jobs:
           command -v sqlite3 && sqlite3 --version || echo "sqlite3 not found"
           command -v mmdc && echo "mermaid-cli installed" || echo "mermaid-cli not found"
           python3 -c "import pynvim" && echo "pynvim installed" || echo "pynvim not found"
+          command -v php && php -v | head -1 || echo "PHP not found"
+          command -v composer && composer --version | head -1 || echo "Composer not found"
       
       - name: Check Node.js and NVM installation
         run: |
@@ -424,6 +426,7 @@ jobs:
           echo "   ⚡ Bats test suite"
           echo "   🟢 Node.js versions (24*, 22, 20, 18)"
           echo "   🥟 Bun runtime"
+          echo "   🐘 PHP 8.4 with Composer"
           echo "   🐱 Kitty terminal"
           echo "   🐙 LazyGit (from GitHub)"
           echo "   🐍 Python packages (pynvim)"
@@ -431,6 +434,7 @@ jobs:
           echo ""
           echo "⭐ Default Node.js version: 24 (with npm latest)"
           echo "🥟 Bun: Latest stable version"
+          echo "🐘 PHP: 8.4 with common extensions"
           echo "🐱 Kitty: Recommended terminal for LazyVim"
           echo "🐙 LazyGit: Latest from GitHub releases"
           echo ""

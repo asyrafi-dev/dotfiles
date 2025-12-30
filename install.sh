@@ -217,6 +217,11 @@ print_info "Installing Bun..."
 bash scripts/install-bun.sh
 print_success "Bun installed"
 
+echo
+print_info "Installing PHP..."
+bash scripts/install-php.sh
+print_success "PHP installed"
+
 # Apply dotfiles configuration using Stow
 echo "  -> Applying configuration files with Stow..."
 # Remove potentially conflicting files before stowing

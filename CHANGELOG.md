@@ -11,6 +11,7 @@ All notable changes to this project.
 - Complete LazyVim requirements (tree-sitter, gcc, clipboard tools)
 - LazyGit installer from GitHub releases (latest version)
 - Python packages installer (pynvim for Neovim Python support)
+- PHP 8.4 installer with Composer and common extensions
 - Additional LazyVim dependencies (luarocks, imagemagick, sqlite3)
 - npm global packages (tree-sitter-cli, neovim, mermaid-cli)
 - Bun PATH configuration in dotfiles bashrc
@@ -23,7 +24,7 @@ All notable changes to this project.
 - Interactive Git user configuration
 - Smart CI mode detection (safe for users, works in GitHub Actions)
 - Error traps in all scripts for consistent error handling
-- Improved test coverage (9 tests)
+- Improved test coverage (15 tests)
 - Makefile targets: rollback, uninstall, update
 - Uninstall script for clean removal
 - Update script for system maintenance
@@ -72,6 +73,7 @@ Initial release.
 - Neovim v0.11.5 with LazyVim (built with LuaJIT)
 - Node.js LTS via NVM (18/20/22/24)
 - Bun runtime and toolkit
+- PHP 8.4 with Composer
 - Git with 30+ aliases
 - LazyGit terminal UI
 - Tmux with vi-mode and mouse support

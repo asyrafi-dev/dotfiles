@@ -12,6 +12,7 @@ My personal dotfiles for Ubuntu 24.04 LTS. One command to set up everything.
 - **Neovim v0.11.5** with LazyVim (built with LuaJIT)
 - **Node.js LTS** via NVM (18/20/22/24) with npm packages (tree-sitter-cli, neovim, mermaid-cli)
 - **Bun** - Fast JavaScript runtime and toolkit
+- **PHP 8.4** with Composer and common extensions
 - **Python packages** - pynvim for Neovim Python support
 - **Git** with useful aliases
 - **Tmux** with vi-mode and mouse support
@@ -67,6 +68,8 @@ node -v && npm -v                   # Verify Node.js and npm
 tree-sitter --version               # Verify tree-sitter
 python3 -c "import pynvim"          # Verify pynvim
 bun --version                       # Verify Bun
+php -v                              # Verify PHP
+composer --version                  # Verify Composer
 bash scripts/setup-git-user.sh      # Configure Git if skipped
 ```
 
@@ -151,6 +154,33 @@ bun create next myapp
 
 # Run files directly
 bun run index.ts
+```
+
+### PHP Usage
+
+```bash
+# Check version
+php -v
+
+# List installed modules
+php -m
+
+# Run PHP file
+php script.php
+
+# Start built-in server
+php -S localhost:8000
+
+# Composer commands
+composer init           # Create new project
+composer install        # Install dependencies
+composer require pkg    # Add package
+composer update         # Update dependencies
+
+# Laravel example
+composer create-project laravel/laravel myapp
+cd myapp
+php artisan serve
 ```
 
 ## Keybindings

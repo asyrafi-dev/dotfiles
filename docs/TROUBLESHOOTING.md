@@ -198,6 +198,44 @@ git status
 git init
 ```
 
+## PHP Issues
+
+### PHP not found
+
+```bash
+# Reinstall PHP
+cd ~/dotfiles
+bash scripts/install-php.sh
+```
+
+### Composer not found
+
+```bash
+# Install Composer manually
+curl -sS https://getcomposer.org/installer | php
+sudo mv composer.phar /usr/local/bin/composer
+```
+
+### Missing PHP extension
+
+```bash
+# Install extension (replace 'extension' with actual name)
+sudo apt install php8.4-extension
+
+# Common extensions
+sudo apt install php8.4-redis php8.4-memcached php8.4-imagick
+```
+
+### PHP version mismatch
+
+```bash
+# Check installed versions
+ls /etc/php/
+
+# Switch default version
+sudo update-alternatives --config php
+```
+
 ### "Please tell me who you are"
 
 ```bash
