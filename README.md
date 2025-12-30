@@ -10,6 +10,7 @@ My personal dotfiles for Ubuntu 24.04 LTS. One command to set up everything.
 
 - **Neovim v0.11.5** with LazyVim
 - **Node.js LTS** via NVM (choose 18/20/22/24)
+- **Bun** - Fast JavaScript runtime and toolkit
 - **Git** with useful aliases
 - **Tmux** with vi-mode and mouse support
 - **FZF, Ripgrep, fd-find** for fast searching
@@ -47,8 +48,11 @@ make setup-git    # Configure Git
 ## After Installation
 
 ```bash
-source ~/.bashrc                    # Reload terminal
-nvim                                # Setup Neovim plugins
+source ~/.bashrc                    # Reload terminal (loads NVM and Bun)
+nvim                                # Setup plugins
+node -v                             # Verify Node.js
+npm -v                              # Verify npm
+bun --version                       # Verify Bun
 bash scripts/setup-git-user.sh      # Configure Git if skipped
 ```
 
@@ -97,6 +101,32 @@ npm install -g npm@latest
 
 # Install global packages
 npm install -g yarn pnpm typescript eslint prettier
+```
+
+### Bun Usage
+
+```bash
+# Check version
+bun --version
+
+# Install dependencies
+bun install
+
+# Run scripts
+bun run dev
+bun run build
+bun test
+
+# Add packages
+bun add react
+bun add -d typescript
+
+# Create new project
+bun create react myapp
+bun create next myapp
+
+# Run files directly
+bun run index.ts
 ```
 
 ## Keybindings

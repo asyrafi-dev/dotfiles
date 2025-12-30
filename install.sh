@@ -197,6 +197,11 @@ print_info "Installing Node.js..."
 bash scripts/install-nodejs.sh
 print_success "Node.js installed"
 
+echo
+print_info "Installing Bun..."
+bash scripts/install-bun.sh
+print_success "Bun installed"
+
 # Apply dotfiles configuration using Stow
 echo "  -> Applying configuration files with Stow..."
 # Remove potentially conflicting files before stowing

@@ -8,9 +8,11 @@ All notable changes to this project.
 
 - ASCII art banner with colored output
 - Node.js installer with LTS version selection (18/20/22/24)
+- Bun installer (fast JavaScript runtime and toolkit)
 - CI/CD pipeline with matrix testing for all Node.js versions
 - Enhanced rollback script (handles all dotfiles)
 - Node.js/NVM verification in verify script
+- Bun verification in verify script
 - Interactive Git user configuration
 - Smart CI mode detection (safe for users, works in GitHub Actions)
 

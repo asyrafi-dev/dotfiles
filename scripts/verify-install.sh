@@ -150,6 +150,25 @@ else
 fi
 echo
 
+echo "[8] Checking Bun..."
+if [ -d "$HOME/.bun" ]; then
+  echo "✓ Bun directory exists"
+  export BUN_INSTALL="$HOME/.bun"
+  export PATH="$BUN_INSTALL/bin:$PATH"
+  
+  if command -v bun >/dev/null 2>&1; then
+    BUN_VERSION=$(bun --version)
+    echo "✓ Bun installed: v$BUN_VERSION"
+  else
+    echo "⚠ Bun command not available (may need to reload shell)"
+    ((WARNINGS++))
+  fi
+else
+  echo "⚠ Bun not installed"
+  ((WARNINGS++))
+fi
+echo
+
 echo
 echo "Verification Summary"
 echo "===================="
