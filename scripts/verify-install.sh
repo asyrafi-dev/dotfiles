@@ -317,6 +317,15 @@ else
   echo "⚠ kubectl not found"
   ((WARNINGS++))
 fi
+
+# Check MariaDB
+if command -v mariadb >/dev/null 2>&1; then
+  MARIADB_VERSION=$(mariadb --version | awk '{print $5}' | cut -d'-' -f1)
+  echo "✓ MariaDB installed: v$MARIADB_VERSION"
+else
+  echo "⚠ MariaDB not found"
+  ((WARNINGS++))
+fi
 echo
 
 echo

@@ -323,6 +323,58 @@ chmod 600 ~/.kube/config
 kubectl config view
 ```
 
+## MariaDB Issues
+
+### MariaDB not found
+
+```bash
+# Reinstall MariaDB
+cd ~/dotfiles
+bash scripts/install-mariadb.sh
+```
+
+### Cannot connect to server
+
+```bash
+# Check service status
+sudo systemctl status mariadb
+
+# Start service
+sudo systemctl start mariadb
+
+# Check if socket exists
+ls -la /var/run/mysqld/mysqld.sock
+```
+
+### Access denied for root
+
+```bash
+# Reset root password
+sudo systemctl stop mariadb
+sudo mysqld_safe --skip-grant-tables &
+sudo mariadb -u root
+
+# In MariaDB shell:
+FLUSH PRIVILEGES;
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'newpassword';
+EXIT;
+
+sudo systemctl restart mariadb
+```
+
+### Port already in use
+
+```bash
+# Check what's using port 3306
+sudo lsof -i :3306
+
+# Kill process if needed
+sudo kill <PID>
+
+# Restart MariaDB
+sudo systemctl restart mariadb
+```
+
 ### "Please tell me who you are"
 
 ```bash

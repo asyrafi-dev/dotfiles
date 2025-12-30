@@ -21,7 +21,8 @@ bun --version                       # Verify Bun
 php -v                              # Verify PHP
 composer --version                  # Verify Composer
 podman --version                    # Verify Podman
-kubectl version --client            # Verify kubectl
+kubectl version --client  # Check version
+mariadb --version         # Check MariaDB
 bash scripts/setup-git-user.sh      # Configure Git if skipped
 ```
 
@@ -176,6 +177,14 @@ kubectl cluster-info      # Cluster info
 kubectl get pods          # List pods
 kubectl get nodes         # List nodes
 k get pods                # Short alias
+```
+
+### MariaDB Usage
+```bash
+mariadb --version         # Check version
+sudo mariadb              # Connect as root
+sudo systemctl status mariadb  # Check service
+sudo mariadb-secure-installation  # Secure setup
 ```
 
 ### Add System Packages

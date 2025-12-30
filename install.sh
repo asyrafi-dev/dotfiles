@@ -227,6 +227,11 @@ print_info "Installing Podman..."
 bash scripts/install-podman.sh
 print_success "Podman installed"
 
+echo
+print_info "Installing MariaDB..."
+bash scripts/install-mariadb.sh
+print_success "MariaDB installed"
+
 # Apply dotfiles configuration using Stow
 echo "  -> Applying configuration files with Stow..."
 # Remove potentially conflicting files before stowing

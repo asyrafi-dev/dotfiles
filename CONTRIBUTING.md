@@ -65,6 +65,7 @@ Automated tests run on every push and pull request:
 - PHP 8.4 with Composer
 - Podman (rootless containers)
 - kubectl (Kubernetes CLI)
+- MariaDB 12.3 (database server)
 - Bun runtime
 - All system dependencies (luarocks, imagemagick, sqlite3, etc.)
 

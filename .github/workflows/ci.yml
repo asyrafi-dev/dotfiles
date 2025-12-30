@@ -117,6 +117,7 @@ jobs:
           command -v podman && podman --version || echo "Podman not found"
           command -v podman-compose && echo "podman-compose installed" || echo "podman-compose not found"
           command -v kubectl && kubectl version --client 2>/dev/null | head -1 || echo "kubectl not found"
+          command -v mariadb && mariadb --version | head -1 || echo "MariaDB not found"
       
       - name: Check Node.js and NVM installation
         run: |
@@ -431,6 +432,7 @@ jobs:
           echo "   🥟 Bun runtime"
           echo "   🐘 PHP 8.4 with Composer"
           echo "   🦭 Podman with kubectl (containers & K8s)"
+          echo "   🐬 MariaDB 12.3 (database server)"
           echo "   🐱 Kitty terminal"
           echo "   🐙 LazyGit (from GitHub)"
           echo "   🐍 Python packages (pynvim)"
@@ -440,6 +442,7 @@ jobs:
           echo "🥟 Bun: Latest stable version"
           echo "🐘 PHP: 8.4 with common extensions"
           echo "🦭 Podman: Rootless container runtime"
+          echo "🐬 MariaDB: 12.3 database server"
           echo "🐱 Kitty: Recommended terminal for LazyVim"
           echo "🐙 LazyGit: Latest from GitHub releases"
           echo ""

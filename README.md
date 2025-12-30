@@ -15,6 +15,7 @@ My personal dotfiles for Ubuntu 24.04 LTS. One command to set up everything.
 - **PHP 8.4** with Composer and common extensions
 - **Podman** - Rootless container runtime (Docker alternative)
 - **kubectl** - Kubernetes CLI for cluster management
+- **MariaDB 12.3** - MySQL-compatible database server
 - **Python packages** - pynvim for Neovim Python support
 - **Git** with useful aliases
 - **Tmux** with vi-mode and mouse support
@@ -74,6 +75,7 @@ php -v                              # Verify PHP
 composer --version                  # Verify Composer
 podman --version                    # Verify Podman
 kubectl version --client            # Verify kubectl
+mariadb --version                   # Verify MariaDB
 bash scripts/setup-git-user.sh      # Configure Git if skipped
 ```
 
@@ -244,6 +246,36 @@ kubectl expose deployment <name> --port=80
 
 # Short alias (already configured)
 k get pods                           # Same as kubectl get pods
+```
+
+### MariaDB Usage
+
+```bash
+# Check version
+mariadb --version
+
+# Connect as root
+sudo mariadb
+
+# Service management
+sudo systemctl status mariadb
+sudo systemctl restart mariadb
+
+# Secure installation (recommended after install)
+sudo mariadb-secure-installation
+
+# Create database
+sudo mariadb -e "CREATE DATABASE mydb;"
+
+# Create user
+sudo mariadb -e "CREATE USER 'user'@'localhost' IDENTIFIED BY 'password';"
+sudo mariadb -e "GRANT ALL ON mydb.* TO 'user'@'localhost';"
+
+# Import SQL file
+sudo mariadb mydb < dump.sql
+
+# Export database
+sudo mariadb-dump mydb > backup.sql
 ```
 
 ## Keybindings

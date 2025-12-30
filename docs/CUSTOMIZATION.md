@@ -450,6 +450,94 @@ kubectl autocompletion is automatically enabled. Restart terminal or:
 source ~/.bashrc
 ```
 
+## MariaDB
+
+### Basic Commands
+
+```bash
+# Check version
+mariadb --version
+
+# Connect as root
+sudo mariadb
+
+# Service management
+sudo systemctl status mariadb
+sudo systemctl start mariadb
+sudo systemctl stop mariadb
+sudo systemctl restart mariadb
+```
+
+### Secure Installation
+
+Run after installation:
+```bash
+sudo mariadb-secure-installation
+```
+
+This will:
+- Set root password
+- Remove anonymous users
+- Disable remote root login
+- Remove test database
+
+### Database Management
+
+```bash
+# Create database
+sudo mariadb -e "CREATE DATABASE mydb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+
+# Create user
+sudo mariadb -e "CREATE USER 'user'@'localhost' IDENTIFIED BY 'password';"
+
+# Grant privileges
+sudo mariadb -e "GRANT ALL PRIVILEGES ON mydb.* TO 'user'@'localhost';"
+sudo mariadb -e "FLUSH PRIVILEGES;"
+
+# List databases
+sudo mariadb -e "SHOW DATABASES;"
+
+# List users
+sudo mariadb -e "SELECT user, host FROM mysql.user;"
+```
+
+### Backup and Restore
+
+```bash
+# Export database
+sudo mariadb-dump mydb > backup.sql
+sudo mariadb-dump --all-databases > all_backup.sql
+
+# Import database
+sudo mariadb mydb < backup.sql
+
+# Export with compression
+sudo mariadb-dump mydb | gzip > backup.sql.gz
+
+# Import compressed
+gunzip < backup.sql.gz | sudo mariadb mydb
+```
+
+### Configuration
+
+Edit MariaDB config:
+```bash
+sudo nvim /etc/mysql/mariadb.conf.d/50-server.cnf
+```
+
+Common settings:
+```ini
+[mysqld]
+max_connections = 200
+innodb_buffer_pool_size = 1G
+query_cache_size = 64M
+```
+
+Restart after changes:
+```bash
+sudo systemctl restart mariadb
+```
+
 ## Fonts
 
 ### Change Terminal Font
