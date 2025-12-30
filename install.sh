@@ -24,7 +24,10 @@ if [ -n "$LOG_FILE" ]; then
   exec > >(tee -a "$LOG_FILE") 2>&1
 fi
 
-export ASSUME_YES DRY_RUN LOG_FILE
+BACKUP_MANIFEST="${BACKUP_MANIFEST:-$HOME/.dotfiles_backups_$(date +%s).txt}"
+mkdir -p "$(dirname "$BACKUP_MANIFEST")"
+touch "$BACKUP_MANIFEST"
+export ASSUME_YES DRY_RUN LOG_FILE BACKUP_MANIFEST
 
 echo "[+] Starting Dotfiles Installation..."
 echo
@@ -37,11 +40,15 @@ bash scripts/preflight.sh
 
 # Confirm before proceeding
 echo
-echo "This installer will modify your system and install packages. Review the script before continuing."
-read -rp "Do you want to continue? [y/N] " answer
-if [[ ! $answer =~ ^[Yy]$ ]]; then
-    echo "Aborting installation. No changes were made."
-    exit 1
+if [ "${ASSUME_YES:-0}" -eq 1 ] || [ -n "${CI:-}" ]; then
+  echo "Proceeding non-interactively (assume-yes or CI environment)."
+else
+  echo "This installer will modify your system and install packages. Review the script before continuing."
+  read -rp "Do you want to continue? [y/N] " answer
+  if [[ ! $answer =~ ^[Yy]$ ]]; then
+      echo "Aborting installation. No changes were made."
+      exit 1
+  fi
 fi
 
 # --- System Package Installation ---
@@ -95,6 +102,7 @@ else
     BACKUP="$HOME/.bashrc.bak.$(date +%s)"
     echo "  -> Backing up existing ~/.bashrc to $BACKUP"
     mv "$HOME/.bashrc" "$BACKUP"
+    echo "bashrc:$BACKUP" >> "$BACKUP_MANIFEST"
   fi
 fi
 
@@ -125,11 +133,16 @@ else
   # show what will be done
   echo "Preview of stow actions:"
   (cd home && stow -n -t ~ --no-folding -- *)
-  read -rp "Apply these changes? [y/N] " stow_confirm
-  if [[ ! $stow_confirm =~ ^[Yy]$ ]]; then
-    echo "Skipping stow. You can run 'stow -t ~ --no-folding -- *' manually."
-  else
+  if [ "${ASSUME_YES:-0}" -eq 1 ] || [ -n "${CI:-}" ]; then
+    echo "Applying stow changes non-interactively."
     (cd home && stow -t ~ --no-folding -- *)
+  else
+    read -rp "Apply these changes? [y/N] " stow_confirm
+    if [[ ! $stow_confirm =~ ^[Yy]$ ]]; then
+      echo "Skipping stow. You can run 'stow -t ~ --no-folding -- *' manually."
+    else
+      (cd home && stow -t ~ --no-folding -- *)
+    fi
   fi
 fi
 

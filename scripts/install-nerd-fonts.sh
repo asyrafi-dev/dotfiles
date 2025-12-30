@@ -2,8 +2,11 @@
 set -euo pipefail
 trap 'echo "Nerd Fonts installer error on line $LINENO" >&2; exit 1' ERR
 
+ASSUME_YES=${ASSUME_YES:-0}
+DRY_RUN=${DRY_RUN:-0}
+
 FONT_DIR="$HOME/.local/share/fonts"
-TMP="/tmp/nerd-fonts"
+TMP="/tmp/nerd-fonts-$$"
 
 mkdir -p "$FONT_DIR" "$TMP"
 
@@ -16,12 +19,19 @@ declare -A FONTS=(
 )
 
 for NAME in "${!FONTS[@]}"; do
-  if [ -f "$FONT_DIR/$NAME" ]; then
-    echo "Font $NAME seems already installed; skipping."; continue
+  echo "[nerd-fonts] Processing $NAME"
+  if [ "$DRY_RUN" -eq 1 ]; then
+    echo "DRY-RUN: would download ${FONTS[$NAME]} to $TMP/$NAME.zip and unzip to $FONT_DIR"
+    continue
   fi
   wget -qO "$TMP/$NAME.zip" "${FONTS[$NAME]}"
   unzip -qo "$TMP/$NAME.zip" -d "$FONT_DIR"
 done
 
-fc-cache -fv
-echo "Nerd Fonts installed."
+if [ "$DRY_RUN" -eq 0 ]; then
+  fc-cache -fv || true
+  echo "Nerd Fonts installed."
+  rm -rf "$TMP"
+else
+  echo "DRY-RUN: skipped fc-cache and cleanup"
+fi

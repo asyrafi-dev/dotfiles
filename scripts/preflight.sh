@@ -2,6 +2,10 @@
 set -euo pipefail
 trap 'echo "Preflight error on line $LINENO" >&2; exit 1' ERR
 
+ASSUME_YES=${ASSUME_YES:-0}
+DRY_RUN=${DRY_RUN:-0}
+CI=${CI:-}
+
 echo "[+] Running pre-installation checks..."
 
 # 1. Check for internet connection
@@ -20,15 +24,23 @@ fi
 
 # 3. Acquire and keep-alive sudo permissions
 echo "  -> Acquiring administrator (sudo) permissions..."
-sudo -v
-( while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done ) 2>/dev/null &
-SUDO_PID=$!
-trap 'kill "${SUDO_PID}" >/dev/null 2>&1 || true' EXIT
+if [ "$DRY_RUN" -eq 1 ]; then
+  echo "DRY-RUN: would acquire sudo credentials"
+else
+  sudo -v
+  ( while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done ) 2>/dev/null &
+  SUDO_PID=$!
+  trap 'kill "${SUDO_PID}" >/dev/null 2>&1 || true' EXIT
+fi
 
 # 4. Attempt to load the FUSE kernel module for AppImage support
 echo "  -> Checking for FUSE kernel module..."
-if ! sudo modprobe fuse; then
-  echo "     WARNING: FUSE kernel module could not be loaded. AppImages may not function correctly."
+if [ "$DRY_RUN" -eq 1 ]; then
+  echo "DRY-RUN: would try to load fuse module"
+else
+  if ! sudo modprobe fuse; then
+    echo "     WARNING: FUSE kernel module could not be loaded. AppImages may not function correctly."
+  fi
 fi
 
 # 5. Check for required commands and optionally install
@@ -44,22 +56,22 @@ done
 if [ ${#MISSING[@]} -gt 0 ]; then
   echo "     The following packages are missing: ${MISSING[*]}"
   echo "     You can install them with: sudo apt-get install -y ${MISSING[*]}"
-  if [ "${ASSUME_YES:-0}" -eq 1 ]; then
-    if [ "${DRY_RUN:-0}" -eq 1 ]; then
-      echo "DRY-RUN: would install missing packages: ${MISSING[*]}"
-    else
-      echo "Installing missing packages..."
-      sudo apt-get update
-      sudo apt-get install -y "${MISSING[@]}"
-    fi
+  if [ "$DRY_RUN" -eq 1 ]; then
+    echo "DRY-RUN: would install missing packages: ${MISSING[*]}"
   else
-    read -rp "Install missing packages now? [y/N] " resp
-    if [[ $resp =~ ^[Yy]$ ]]; then
+    if [ "$ASSUME_YES" -eq 1 ] || [ -n "$CI" ]; then
+      echo "Installing missing packages: ${MISSING[*]}"
       sudo apt-get update
       sudo apt-get install -y "${MISSING[@]}"
     else
-      echo "Please install the required packages and re-run the installer."
-      exit 1
+      read -rp "Install missing packages now? [y/N] " resp
+      if [[ $resp =~ ^[Yy]$ ]]; then
+        sudo apt-get update
+        sudo apt-get install -y "${MISSING[@]}"
+      else
+        echo "Please install the required packages and re-run the installer."
+        exit 1
+      fi
     fi
   fi
 fi

@@ -78,6 +78,19 @@ jobs:
       - name: Make install scripts executable
         run: chmod +x install.sh scripts/*.sh || true
 
+      - name: Install test dependencies (bats)
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y bats || true
+
+      - name: Run bats tests
+        run: |
+          if [ -d tests ]; then
+            bats -r tests || (echo "Bats tests failed" && exit 1)
+          else
+            echo "No tests found; skipping"
+          fi
+
       - name: Run preflight checks
         run: bash -e ./scripts/preflight.sh
 
@@ -122,3 +135,4 @@ jobs:
         with:
           name: ci-full-install-log
           path: ci-full-install.log
+
