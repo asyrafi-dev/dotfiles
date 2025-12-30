@@ -1,4 +1,4 @@
-.PHONY: help install dry-run verify test clean shellcheck
+.PHONY: help install dry-run verify test clean shellcheck setup-git
 
 help:
 	@echo "Dotfiles Makefile"
@@ -7,6 +7,7 @@ help:
 	@echo "  make install     - Run full installation"
 	@echo "  make dry-run     - Preview installation without changes"
 	@echo "  make verify      - Verify installation"
+	@echo "  make setup-git   - Configure Git user information"
 	@echo "  make test        - Run tests"
 	@echo "  make shellcheck  - Run ShellCheck on all scripts"
 	@echo "  make clean       - Remove generated files"
@@ -23,6 +24,10 @@ dry-run:
 verify:
 	@chmod +x scripts/verify-install.sh
 	@bash scripts/verify-install.sh
+
+setup-git:
+	@chmod +x scripts/setup-git-user.sh
+	@bash scripts/setup-git-user.sh
 
 test:
 	@chmod +x install.sh scripts/*.sh

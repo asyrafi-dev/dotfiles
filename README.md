@@ -1,122 +1,91 @@
 # Dotfiles for Ubuntu 24.04 LTS
 
-[![CI](https://github.com/YOUR_USERNAME/dotfiles/workflows/CI/badge.svg)](https://github.com/YOUR_USERNAME/dotfiles/actions)
+[![CI](https://github.com/YOUR_USERNAME/dotfiles/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/dotfiles/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Ubuntu](https://img.shields.io/badge/Ubuntu-24.04%20LTS-orange.svg)](https://ubuntu.com/)
+[![Shell](https://img.shields.io/badge/Shell-Bash-green.svg)](https://www.gnu.org/software/bash/)
 
-Professional dotfiles configuration for Ubuntu 24.04 LTS with automated installation, backup, and rollback capabilities.
-
-## Overview
-
-This repository provides a complete development environment setup that can be deployed with a single command. Designed for disaster recovery scenarios where you need to quickly restore your development environment on a fresh Ubuntu installation.
+Professional dotfiles configuration for Ubuntu 24.04 LTS with automated installation and rollback support.
 
 ## Features
 
-- Automated installation with safety checks
-- Automatic backup of existing configurations
-- Rollback support for safe recovery
-- Dry-run mode for previewing changes
-- Idempotent and non-destructive operations
-- CI-friendly with non-interactive mode
+- Automated installation with interactive Git setup
+- Automatic backup and rollback support
+- Dry-run mode for safe preview
+- Idempotent and non-destructive
+- CI/CD ready
 
 ## What Gets Installed
 
-### Development Tools
-- Neovim v0.11.5 with LazyVim configuration
-- Git with optimized settings
-- Tmux with vi-mode and mouse support
-- FZF for fuzzy finding
-- Ripgrep for fast text search
-- fd-find for fast file search
-
-### Fonts
-- Hack Nerd Font
-- JetBrains Mono Nerd Font
-- Fira Code Nerd Font
-- Meslo Nerd Font
-- Cascadia Code Nerd Font
-
-### Configurations
-- Bash with custom aliases and git-aware prompt
-- Git with useful aliases and diff/merge tools
-- Tmux with custom keybindings
-- Neovim with LazyVim starter configuration
+- **Neovim v0.11.5** with LazyVim
+- **Git** with 30+ useful aliases
+- **Tmux** with vi-mode and mouse support
+- **FZF, Ripgrep, fd-find** for fast searching
+- **5 Nerd Fonts** (Hack, JetBrains Mono, Fira Code, Meslo, Cascadia Code)
+- **Optimized Bash** with git-aware prompt
 
 ## Quick Start
 
-### Using Make (Recommended)
-
 ```bash
-# Clone the repository
-git clone https://github.com/YOUR_USERNAME/dotfiles.git ~/dotfiles
-cd ~/dotfiles
-
-# Make scripts executable (required first time)
-chmod +x install.sh scripts/*.sh
-
-# Preview installation
-make dry-run
-
-# Run installation
-make install
-
-# Verify installation
-make verify
-```
-
-### Manual Installation
-
-```bash
-# Clone the repository
+# Clone repository
 git clone https://github.com/YOUR_USERNAME/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 
 # Make scripts executable
 chmod +x install.sh scripts/*.sh
 
-# Run the installer
+# Install
 ./install.sh
 ```
 
-### Preview Before Installing
+The installer will prompt you to configure Git (name and email) during installation.
+
+### Using Make
 
 ```bash
-# See what will be changed without modifying the system
-./install.sh --dry-run
+make install      # Install dotfiles
+make dry-run      # Preview changes
+make verify       # Verify installation
+make setup-git    # Configure Git
+make test         # Run tests
 ```
 
-### Non-Interactive Installation
+## Post-Installation
 
 ```bash
-# For automation or CI/CD pipelines
-./install.sh --yes --log=install.log
+# Restart terminal
+source ~/.bashrc
+
+# Setup Neovim plugins (first time)
+nvim
+
+# Configure Git (if skipped)
+bash scripts/setup-git-user.sh
 ```
 
-## Requirements
+## Configuration
 
-- Ubuntu 24.04 LTS (or other apt-based distributions)
-- Internet connection
-- Sudo privileges
-
-## Customization
-
-### Before Installation
-
-Edit personal information in configuration files:
+### Git Setup
 
 ```bash
-# Update Git user information
-nano home/git/.gitconfig
+bash scripts/setup-git-user.sh
 ```
 
-Add or remove system packages:
-
+Or manually:
 ```bash
-# Edit package list
+git config --global user.name "Your Name"
+git config --global user.email "your.email@example.com"
+```
+
+### Add/Remove Packages
+
+Edit `packages/apt.txt` and re-run installer:
+```bash
 nano packages/apt.txt
+./install.sh
 ```
 
-### After Installation
+### Customize Dotfiles
 
 All configurations are symlinked to your home directory:
 - `~/.bashrc` - Bash configuration
@@ -124,189 +93,208 @@ All configurations are symlinked to your home directory:
 - `~/.tmux.conf` - Tmux configuration
 - `~/.config/nvim/` - Neovim configuration
 
-Edit these files directly to customize your environment.
+Edit these files directly to customize.
+
+## Keybindings
+
+### Tmux
+- `Ctrl+b |` - Split vertical
+- `Ctrl+b -` - Split horizontal
+- `Alt+Arrow` - Navigate panes
+- `Ctrl+b r` - Reload config
+
+### FZF
+- `Ctrl+T` - Find files
+- `Ctrl+R` - Search history
+- `Alt+C` - Change directory
+
+### Bash Aliases
+```bash
+ll              # List all files
+gs              # Git status
+ga .            # Git add all
+gc              # Git commit
+gp              # Git push
+gl              # Git log graph
+vim             # Neovim
+```
+
+### Git Aliases
+```bash
+git st          # Status
+git s           # Short status
+git cm "msg"    # Commit with message
+git lg          # Log graph
+git cob name    # Create branch
+git d           # Diff
+git ds          # Diff staged
+git unstage     # Unstage files
+git undo        # Undo last commit
+git aliases     # Show all aliases
+```
 
 ## Backup and Rollback
 
-### Automatic Backups
-
-The installer automatically backs up files before replacing them:
-
+Files are automatically backed up before changes:
 ```bash
-# Backups are timestamped
-~/.bashrc.bak.1735567890
-~/.config/nvim.bak.1735567890
-
-# Backup manifest
-~/.dotfiles_backups_1735567890.txt
+~/.dotfiles_backups_<timestamp>.txt
 ```
 
-### Restore Previous Configuration
-
+Restore previous configuration:
 ```bash
-# Rollback using the latest manifest
 ./scripts/rollback.sh
-
-# Or specify a particular manifest
-./scripts/rollback.sh ~/.dotfiles_backups_1735567890.txt
 ```
 
-## Post-Installation
-
-### Verify Installation
-
-```bash
-# Run verification script
-bash scripts/verify-install.sh
-```
-
-### Setup Neovim
-
-```bash
-# Launch Neovim for the first time
-nvim
-
-# LazyVim will automatically install plugins
-# Wait for completion, then restart nvim
-```
-
-### Update Git Configuration
-
-```bash
-# Set your personal information
-git config --global user.name "Your Name"
-git config --global user.email "your.email@example.com"
-```
-
-## Usage
-
-### Command Line Options
+## Command Options
 
 ```bash
 ./install.sh [OPTIONS]
 
 Options:
-  --dry-run       Preview changes without modifying the system
-  --yes, -y       Non-interactive mode (assume yes to all prompts)
-  --log FILE      Log output to specified file
+  --dry-run       Preview changes without modifying system
+  --yes, -y       Non-interactive mode (skip prompts)
+  --log FILE      Log output to file
   -h, --help      Show help message
 ```
-
-### Tmux Keybindings
-
-- `Ctrl+b |` - Split window vertically
-- `Ctrl+b -` - Split window horizontally
-- `Alt+Arrow` - Navigate between panes
-- `Ctrl+b r` - Reload configuration
-
-### FZF Keybindings
-
-- `Ctrl+T` - Fuzzy find files
-- `Ctrl+R` - Fuzzy find command history
-- `Alt+C` - Fuzzy change directory
 
 ## Troubleshooting
 
 ### Neovim AppImage Issues
 
-If the AppImage doesn't run due to FUSE issues:
-
 ```bash
-# Install FUSE
-sudo apt-get install fuse libfuse2
-
-# Load FUSE module
+sudo apt install fuse libfuse2
 sudo modprobe fuse
 ```
 
-### Font Issues
-
-If fonts don't appear after installation:
+### Fonts Not Showing
 
 ```bash
-# Rebuild font cache
 fc-cache -fv
-
-# Restart your terminal or logout/login
+# Restart terminal and select a Nerd Font in terminal preferences
 ```
 
 ### Stow Conflicts
 
-If stow reports conflicts:
-
 ```bash
-# Backup conflicting files manually
 mv ~/.bashrc ~/.bashrc.backup
-
-# Re-run the installer
 ./install.sh
 ```
+
+### Rollback Changes
+
+```bash
+./scripts/rollback.sh
+```
+
+See [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) for more solutions.
+
+## Customization Examples
+
+### Add Bash Aliases
+
+Edit `~/.bashrc`:
+```bash
+alias update='sudo apt update && sudo apt upgrade -y'
+alias myproject='cd ~/projects/myproject'
+```
+
+Reload:
+```bash
+source ~/.bashrc
+```
+
+### Add Git Aliases
+
+Edit `~/.gitconfig`:
+```ini
+[alias]
+  pushf = push --force-with-lease
+  amend = commit --amend --no-edit
+```
+
+### Change Tmux Prefix
+
+Edit `~/.tmux.conf`:
+```bash
+unbind C-b
+set -g prefix C-a
+bind C-a send-prefix
+```
+
+Reload:
+```bash
+tmux source-file ~/.tmux.conf
+```
+
+### Add Neovim Plugins
+
+Create `~/.config/nvim/lua/plugins/custom.lua`:
+```lua
+return {
+  { "folke/tokyonight.nvim" },
+  { "github/copilot.vim" },
+}
+```
+
+Restart Neovim to install.
 
 ## Repository Structure
 
 ```
 dotfiles/
-├── .github/
-│   ├── workflows/
-│   │   └── ci.yml                 # CI/CD pipeline
-│   ├── ISSUE_TEMPLATE/            # Issue templates
-│   └── pull_request_template.md   # PR template
-├── docs/
-│   ├── QUICK_START.md             # Quick start guide
-│   └── TROUBLESHOOTING.md         # Troubleshooting guide
-├── home/                          # Dotfiles to be stowed
-│   ├── bash/.bashrc              # Bash configuration
-│   ├── git/.gitconfig            # Git configuration
-│   └── tmux/.tmux.conf           # Tmux configuration
+├── .github/              # CI workflows and templates
+├── docs/                 # Additional documentation
+├── home/                 # Dotfiles (stowed to ~/)
+│   ├── bash/.bashrc
+│   ├── git/.gitconfig
+│   └── tmux/.tmux.conf
 ├── packages/
-│   └── apt.txt                   # System packages list
+│   └── apt.txt          # System packages list
 ├── scripts/
-│   ├── preflight.sh              # Pre-installation checks
-│   ├── install-neovim.sh         # Neovim installer
-│   ├── install-nerd-fonts.sh     # Fonts installer
-│   ├── install-lazyvim.sh        # LazyVim installer
-│   ├── rollback.sh               # Rollback helper
-│   └── verify-install.sh         # Installation verification
-├── tests/                        # Test files
-├── .gitignore                    # Git ignore rules
-├── CHANGELOG.md                  # Version history
-├── CONTRIBUTING.md               # Contribution guidelines
-├── LICENSE                       # MIT License
-├── README.md                     # This file
-└── install.sh                    # Main installer
+│   ├── setup-git-user.sh      # Interactive Git setup
+│   ├── install-neovim.sh      # Neovim installer
+│   ├── install-nerd-fonts.sh  # Fonts installer
+│   ├── install-lazyvim.sh     # LazyVim setup
+│   ├── preflight.sh           # System checks
+│   ├── rollback.sh            # Rollback helper
+│   └── verify-install.sh      # Verify installation
+├── tests/               # Test files
+├── install.sh           # Main installer
+├── Makefile             # Convenience commands
+└── README.md            # This file
 ```
+
+## Documentation
+
+- [Quick Start](docs/QUICK_START.md) - Quick reference guide
+- [Customization](docs/CUSTOMIZATION.md) - Detailed customization guide
+- [Troubleshooting](docs/TROUBLESHOOTING.md) - Common issues and solutions
 
 ## Testing
 
-### Using Make
-
 ```bash
-# Run all tests
+# Run tests
 make test
 
-# Run ShellCheck
+# Check scripts with ShellCheck
 make shellcheck
-```
 
-### Manual Testing
-
-```bash
-# Install bats testing framework
-sudo apt-get install bats
-
-# Run tests
-bats tests/basic.bats
+# Clean generated files
+make clean
 ```
 
 ## Contributing
 
-Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+Contributions are welcome. Please ensure:
+- Scripts pass ShellCheck validation
+- Changes are tested on Ubuntu 24.04 LTS
+- Documentation is updated accordingly
 
-See [CHANGELOG.md](CHANGELOG.md) for version history.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+MIT License - See [LICENSE](LICENSE) for details.
 
 Copyright (c) 2025 Muhammad Asyrafi Hidayatullah
 

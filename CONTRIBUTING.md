@@ -45,6 +45,18 @@ Before submitting:
 - Verify no errors in actual installation
 - Test rollback functionality if applicable
 - Run existing tests: `bats tests/basic.bats`
+- Check with ShellCheck: `shellcheck install.sh scripts/*.sh`
+
+### CI Pipeline
+
+The repository includes automated CI testing via GitHub Actions:
+- **ShellCheck** - Validates shell script syntax
+- **Dry-run test** - Tests preview mode
+- **Full installation** - Tests complete installation
+- **Bats tests** - Runs test suite
+- **Rollback test** - Tests backup and rollback
+
+CI runs automatically on push and pull requests.
 
 ### Documentation
 

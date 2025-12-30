@@ -219,6 +219,35 @@ if [ "$DRY_RUN" -eq 0 ]; then
   fi
 fi
 
+# --- Git User Configuration ---
+if [ "$DRY_RUN" -eq 0 ]; then
+  echo
+  echo "[+] Git User Configuration"
+  CURRENT_GIT_NAME=$(git config --global user.name 2>/dev/null || echo "")
+  CURRENT_GIT_EMAIL=$(git config --global user.email 2>/dev/null || echo "")
+  
+  if [ -z "$CURRENT_GIT_NAME" ] || [ -z "$CURRENT_GIT_EMAIL" ]; then
+    echo "Git user information is not configured."
+    if [ "${ASSUME_YES:-0}" -eq 1 ] || [ -n "${CI:-}" ]; then
+      echo "Skipping Git user configuration in non-interactive mode."
+      echo "Run 'bash scripts/setup-git-user.sh' later to configure."
+    else
+      echo
+      read -rp "Would you like to configure it now? [Y/n] " setup_git
+      if [[ ! $setup_git =~ ^[Nn]$ ]]; then
+        bash scripts/setup-git-user.sh
+      else
+        echo "You can configure Git later by running:"
+        echo "  bash scripts/setup-git-user.sh"
+      fi
+    fi
+  else
+    echo "Git is already configured:"
+    echo "  Name:  $CURRENT_GIT_NAME"
+    echo "  Email: $CURRENT_GIT_EMAIL"
+  fi
+fi
+
 # --- Final Instructions ---
 echo
 echo "--------------------------------------------------"
@@ -231,17 +260,19 @@ echo "Next steps:"
 echo "1. Restart your terminal for all changes to take effect:"
 echo "   source ~/.bashrc"
 echo
-echo "2. After restarting, launch 'nvim' to allow LazyVim to complete its plugin setup:"
+echo "2. Launch Neovim to complete LazyVim plugin setup:"
 echo "   nvim"
+echo "   (Wait for plugins to install, then restart nvim)"
 echo
-echo "3. Configure your Git identity (IMPORTANT!):"
-echo "   git config --global user.name \"Your Name\""
-echo "   git config --global user.email \"you@email.com\""
+echo "3. If you skipped Git configuration, set it up:"
+echo "   bash scripts/setup-git-user.sh"
 echo
-echo "4. Test your setup:"
+echo "4. Test your new environment:"
 echo "   - Tmux: tmux"
-echo "   - FZF: Ctrl+T (fuzzy find files)"
+echo "   - FZF: Ctrl+T (find files), Ctrl+R (search history)"
 echo "   - Ripgrep: rg 'search term'"
+echo "   - Git aliases: git st, git lg, git aliases"
 echo
-echo "If you encounter any issues, run: ./scripts/rollback.sh"
+echo "For help, see: docs/QUICK_START.md"
+echo "If issues occur, run: ./scripts/rollback.sh"
 echo

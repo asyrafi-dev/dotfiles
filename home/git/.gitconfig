@@ -1,27 +1,83 @@
-[user]
-  name = Your Name
-  email = you@email.com
+# Git Configuration
+# User information will be configured during installation
+# or you can set it manually with:
+#   git config --global user.name "Your Name"
+#   git config --global user.email "your.email@example.com"
+
 [core]
   editor = nvim
   autocrlf = input
+
 [init]
   defaultBranch = main
+
 [pull]
   rebase = false
+
 [push]
   default = simple
+  autoSetupRemote = true
+
 [alias]
+  # Status and info
   st = status
-  co = checkout
+  s = status -sb
+  
+  # Branch operations
   br = branch
+  co = checkout
+  cob = checkout -b
+  
+  # Commit operations
   ci = commit
-  unstage = reset HEAD --
-  last = log -1 HEAD
+  cm = commit -m
+  ca = commit --amend
+  cane = commit --amend --no-edit
+  
+  # Log operations
   lg = log --oneline --graph --decorate --all
+  last = log -1 HEAD
+  ll = log --pretty=format:'%C(yellow)%h%Creset %C(cyan)%ad%Creset | %s %C(green)(%an)%Creset' --date=short
+  
+  # Diff operations
+  d = diff
+  ds = diff --staged
+  
+  # Undo operations
+  unstage = reset HEAD --
+  undo = reset --soft HEAD~1
+  
+  # Other useful aliases
+  aliases = config --get-regexp alias
+
 [color]
   ui = auto
+  branch = auto
+  diff = auto
+  status = auto
+
+[color "branch"]
+  current = yellow reverse
+  local = yellow
+  remote = green
+
+[color "diff"]
+  meta = yellow bold
+  frag = magenta bold
+  old = red bold
+  new = green bold
+
+[color "status"]
+  added = green
+  changed = yellow
+  untracked = red
+
 [diff]
   tool = nvimdiff
+
 [merge]
   tool = nvimdiff
   conflictstyle = diff3
+
+[help]
+  autocorrect = 1
