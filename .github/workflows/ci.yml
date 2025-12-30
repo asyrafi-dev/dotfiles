@@ -103,6 +103,15 @@ jobs:
           command -v rg && rg --version | head -1 || echo "Ripgrep not found"
           command -v fd && fd --version || echo "fd not found"
           command -v git && git --version || echo "Git not found"
+          command -v lazygit && lazygit --version || echo "LazyGit not found"
+          command -v kitty && kitty --version || echo "Kitty not found"
+          command -v tree-sitter && tree-sitter --version || echo "tree-sitter not found"
+          command -v gcc && gcc --version | head -1 || echo "gcc not found"
+          command -v luarocks && luarocks --version | head -1 || echo "luarocks not found"
+          command -v convert && convert --version | head -1 || echo "imagemagick not found"
+          command -v sqlite3 && sqlite3 --version || echo "sqlite3 not found"
+          command -v mmdc && echo "mermaid-cli installed" || echo "mermaid-cli not found"
+          python3 -c "import pynvim" && echo "pynvim installed" || echo "pynvim not found"
       
       - name: Check Node.js and NVM installation
         run: |
@@ -415,10 +424,12 @@ jobs:
           echo "   ⚡ Bats test suite"
           echo "   🟢 Node.js versions (24*, 22, 20, 18)"
           echo "   🥟 Bun runtime"
+          echo "   🐱 Kitty terminal"
           echo "   ⏮️  Rollback functionality"
           echo ""
           echo "⭐ Default Node.js version: 24 (with npm latest)"
           echo "🥟 Bun: Latest stable version"
+          echo "🐱 Kitty: Recommended terminal for LazyVim"
           echo ""
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo "                    🎉 READY TO MERGE!                              "

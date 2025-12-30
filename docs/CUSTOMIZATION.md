@@ -134,15 +134,18 @@ nvm ls-remote --lts     # List all LTS versions
 
 ```bash
 npm install -g yarn pnpm typescript eslint prettier nodemon
+
+# tree-sitter-cli already installed during setup
+tree-sitter --version
 ```
 
 ### Update npm
 
 ```bash
-npm install -g npm@latest  # Update npm (optional for LTS versions)
+npm install -g npm@latest
 ```
 
-Note: npm is automatically updated to latest only for Node.js 24. For other versions (18/20/22), the bundled npm version is used by default.
+Note: npm automatically updated to latest for Node.js 24. Other versions use bundled npm. tree-sitter-cli installed globally via npm during setup.
 
 ### Recommended LTS Versions
 
@@ -150,6 +153,8 @@ Note: npm is automatically updated to latest only for Node.js 24. For other vers
 - **Node.js 20 LTS** (Iron) - Active LTS until April 2026
 - **Node.js 22 LTS** (Jod) - Active LTS until April 2027
 - **Node.js 24** - Latest (will be LTS in October 2025) ⭐ Default
+
+All versions include tree-sitter-cli installed globally via npm.
 
 ## Fonts
 

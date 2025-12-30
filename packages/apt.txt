@@ -6,6 +6,7 @@ htop
 lsb-release
 unzip
 wget
+ca-certificates
 
 # FUSE for AppImage support
 fuse
@@ -18,7 +19,18 @@ ripgrep
 stow
 tmux
 
-# Neovim and Mason dependencies
+# Python for Neovim and LazyVim
 python3
 python3-pip
-tree-sitter-cli
+python3-venv
+
+# LazyVim additional requirements
+lazygit
+luarocks
+imagemagick
+sqlite3
+libsqlite3-dev
+
+# Clipboard tools for LazyVim
+xclip
+xsel

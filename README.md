@@ -8,14 +8,18 @@ My personal dotfiles for Ubuntu 24.04 LTS. One command to set up everything.
 
 ## What's Included
 
-- **Neovim v0.11.5** with LazyVim
-- **Node.js LTS** via NVM (choose 18/20/22/24)
+- **Kitty Terminal** - GPU-accelerated terminal (recommended for LazyVim)
+- **Neovim v0.11.5** with LazyVim (built with LuaJIT)
+- **Node.js LTS** via NVM (18/20/22/24) with npm packages (tree-sitter-cli, neovim, mermaid-cli)
 - **Bun** - Fast JavaScript runtime and toolkit
+- **Python packages** - pynvim for Neovim Python support
 - **Git** with useful aliases
 - **Tmux** with vi-mode and mouse support
 - **FZF, Ripgrep, fd-find** for fast searching
+- **LazyGit** - Terminal UI for Git
 - **Nerd Fonts** (Hack, JetBrains Mono, Fira Code, Meslo, Cascadia Code)
 - **Bash** with git-aware prompt
+- **Complete LazyVim dependencies** (luarocks, imagemagick, sqlite3, build-essential, clipboard tools)
 
 ## Installation
 
@@ -32,9 +36,9 @@ You'll also be prompted to choose a Node.js LTS version:
 - Node.js 18 LTS (Hydrogen)
 - Node.js 20 LTS (Iron)
 - Node.js 22 LTS (Jod)
-- Node.js 24 (Latest) - Default, npm updated to latest
+- Node.js 24 (Latest) - Default
 
-Note: npm is updated to latest only for Node.js 24. Other versions use the bundled npm.
+Note: npm updated to latest for Node.js 24 only. tree-sitter-cli installed globally via npm.
 
 ### Using Make
 
@@ -48,13 +52,21 @@ make setup-git    # Configure Git
 ## After Installation
 
 ```bash
+kitty                               # Launch Kitty terminal (recommended)
 source ~/.bashrc                    # Reload terminal (loads NVM and Bun)
 nvim                                # Setup plugins
-node -v                             # Verify Node.js
-npm -v                              # Verify npm
+node -v && npm -v                   # Verify Node.js and npm
+tree-sitter --version               # Verify tree-sitter
+python3 -c "import pynvim"          # Verify pynvim
 bun --version                       # Verify Bun
 bash scripts/setup-git-user.sh      # Configure Git if skipped
 ```
+
+**Important:** Use Kitty terminal for the best LazyVim experience. It provides:
+- True color support
+- GPU acceleration
+- Proper ligature rendering for Nerd Fonts
+- No display issues with LazyVim UI
 
 ## Configuration
 
@@ -101,6 +113,9 @@ npm install -g npm@latest
 
 # Install global packages
 npm install -g yarn pnpm typescript eslint prettier
+
+# tree-sitter-cli is already installed globally
+tree-sitter --version
 ```
 
 ### Bun Usage
@@ -130,6 +145,19 @@ bun run index.ts
 ```
 
 ## Keybindings
+
+### Kitty Terminal
+
+```
+Ctrl+Shift+Enter    New window
+Ctrl+Shift+T        New tab
+Ctrl+Shift+W        Close window/tab
+Ctrl+Shift+]        Next tab
+Ctrl+Shift+[        Previous tab
+Ctrl+Shift+L        Next layout
+Ctrl+Shift+C        Copy
+Ctrl+Shift+V        Paste
+```
 
 ### Tmux
 
@@ -191,6 +219,14 @@ Files are automatically backed up before changes. To rollback:
 ```
 
 ## Troubleshooting
+
+### LazyVim display issues
+
+Use Kitty terminal for best results:
+```bash
+kitty
+nvim
+```
 
 ### Neovim won't start
 

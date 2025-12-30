@@ -55,31 +55,133 @@ check_command fzf "FZF"
 check_command rg "Ripgrep"
 check_command fd "fd-find"
 check_command stow "GNU Stow"
+check_command lazygit "LazyGit"
+check_command kitty "Kitty Terminal"
 echo
 
 echo "[2] Checking Neovim Version..."
 if command -v nvim >/dev/null 2>&1; then
-  nvim --version | head -n 1
+  NVIM_VERSION=$(nvim --version | head -n 1)
+  echo "$NVIM_VERSION"
+  
+  # Check if Neovim is built with LuaJIT
+  if nvim --version | grep -q "LuaJIT"; then
+    echo "✓ Neovim built with LuaJIT (required by LazyVim)"
+  else
+    echo "⚠ Neovim not built with LuaJIT"
+    ((WARNINGS++))
+  fi
 else
   echo "✗ Neovim not installed"
   ((ERRORS++))
 fi
 echo
 
-echo "[3] Checking Configuration Files..."
+echo "[3] Checking LazyVim Requirements..."
+# Check tree-sitter
+if command -v tree-sitter >/dev/null 2>&1; then
+  echo "✓ tree-sitter installed: $(tree-sitter --version)"
+else
+  echo "⚠ tree-sitter not found (required for syntax highlighting)"
+  ((WARNINGS++))
+fi
+
+# Check C compiler
+if command -v gcc >/dev/null 2>&1; then
+  echo "✓ gcc installed: $(gcc --version | head -n 1)"
+else
+  echo "⚠ gcc not found (required for tree-sitter compilation)"
+  ((WARNINGS++))
+fi
+
+# Check Python packages
+if python3 -c "import pynvim" 2>/dev/null; then
+  echo "✓ pynvim installed"
+else
+  echo "⚠ pynvim not found (required for Python plugins)"
+  ((WARNINGS++))
+fi
+
+# Check luarocks
+if command -v luarocks >/dev/null 2>&1; then
+  echo "✓ luarocks installed: $(luarocks --version | head -n 1)"
+else
+  echo "⚠ luarocks not found (required for Lua plugins)"
+  ((WARNINGS++))
+fi
+
+# Check imagemagick
+if command -v convert >/dev/null 2>&1; then
+  echo "✓ imagemagick installed"
+else
+  echo "⚠ imagemagick not found (required for image processing)"
+  ((WARNINGS++))
+fi
+
+# Check sqlite3
+if command -v sqlite3 >/dev/null 2>&1; then
+  echo "✓ sqlite3 installed: $(sqlite3 --version)"
+else
+  echo "⚠ sqlite3 not found (required for some plugins)"
+  ((WARNINGS++))
+fi
+
+# Check mermaid-cli
+if command -v mmdc >/dev/null 2>&1; then
+  echo "✓ mermaid-cli installed"
+else
+  echo "⚠ mermaid-cli not found (required for diagram rendering)"
+  ((WARNINGS++))
+fi
+
+# Check neovim npm package
+if npm list -g neovim >/dev/null 2>&1; then
+  echo "✓ neovim (npm) installed"
+else
+  echo "⚠ neovim npm package not found (required for Node.js support)"
+  ((WARNINGS++))
+fi
+
+# Check clipboard tools
+if command -v xclip >/dev/null 2>&1 || command -v xsel >/dev/null 2>&1; then
+  echo "✓ Clipboard tools available"
+else
+  echo "⚠ No clipboard tools found (xclip/xsel recommended)"
+  ((WARNINGS++))
+fi
+echo
+
+echo "[4] Checking Kitty Terminal..."
+if command -v kitty >/dev/null 2>&1; then
+  KITTY_VERSION=$(kitty --version 2>/dev/null | awk '{print $2}' || echo "unknown")
+  echo "✓ Kitty installed: v$KITTY_VERSION"
+  
+  # Check if Kitty supports true color
+  if [ -n "$TERM" ] && [[ "$TERM" == *"kitty"* ]]; then
+    echo "✓ Running in Kitty terminal"
+  else
+    echo "ℹ Not currently running in Kitty (recommended for LazyVim)"
+  fi
+else
+  echo "⚠ Kitty not installed (recommended terminal for LazyVim)"
+  ((WARNINGS++))
+fi
+echo
+
+echo "[5] Checking Configuration Files..."
 check_file "$HOME/.bashrc" "~/.bashrc"
 check_file "$HOME/.gitconfig" "~/.gitconfig"
 check_file "$HOME/.tmux.conf" "~/.tmux.conf"
 check_file "$HOME/.config/nvim/init.lua" "~/.config/nvim/init.lua"
 echo
 
-echo "[4] Checking Symlinks (Stow)..."
+echo "[6] Checking Symlinks (Stow)..."
 check_symlink "$HOME/.bashrc" "~/.bashrc"
 check_symlink "$HOME/.gitconfig" "~/.gitconfig"
 check_symlink "$HOME/.tmux.conf" "~/.tmux.conf"
 echo
 
-echo "[5] Checking Fonts..."
+echo "[7] Checking Fonts..."
 FONT_DIR="$HOME/.local/share/fonts"
 if [ -d "$FONT_DIR" ]; then
   FONT_COUNT=$(find "$FONT_DIR" -name "*.ttf" -o -name "*.otf" | wc -l)
@@ -95,7 +197,7 @@ else
 fi
 echo
 
-echo "[6] Checking Git Configuration..."
+echo "[8] Checking Git Configuration..."
 GIT_NAME=$(git config user.name || echo "")
 GIT_EMAIL=$(git config user.email || echo "")
 if [ "$GIT_NAME" = "Your Name" ] || [ -z "$GIT_NAME" ]; then
@@ -112,7 +214,7 @@ else
 fi
 echo
 
-echo "[7] Checking Node.js and NVM..."
+echo "[9] Checking Node.js and NVM..."
 if [ -d "$HOME/.nvm" ]; then
   echo "✓ NVM directory exists"
   export NVM_DIR="$HOME/.nvm"
@@ -150,7 +252,7 @@ else
 fi
 echo
 
-echo "[8] Checking Bun..."
+echo "[10] Checking Bun..."
 if [ -d "$HOME/.bun" ]; then
   echo "✓ Bun directory exists"
   export BUN_INSTALL="$HOME/.bun"

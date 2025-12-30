@@ -85,6 +85,17 @@ sudo ln -sf $(which fdfind) /usr/local/bin/fd
 
 ## Node.js Issues
 
+### tree-sitter not found
+
+```bash
+# tree-sitter-cli installed via npm during setup
+source ~/.bashrc
+tree-sitter --version
+
+# Reinstall if needed
+npm install -g tree-sitter-cli
+```
+
 ### NVM not found
 
 ```bash
@@ -111,13 +122,14 @@ nvm alias default 20
 ### npm permission errors
 
 ```bash
-# Don't use sudo with npm
-# NVM handles permissions correctly
+# Don't use sudo with npm - NVM handles permissions
 
 # If issues persist, reinstall Node
 nvm uninstall 20
 nvm install 20
 nvm alias default 20
+
+# tree-sitter-cli will be reinstalled automatically
 ```
 
 ### Update npm

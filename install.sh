@@ -178,6 +178,11 @@ fi
 
 # Run individual component installers
 echo
+print_info "Installing Kitty Terminal..."
+bash scripts/install-kitty.sh
+print_success "Kitty Terminal installed"
+
+echo
 print_info "Installing Neovim..."
 bash scripts/install-neovim.sh
 print_success "Neovim installed"
@@ -196,6 +201,11 @@ echo
 print_info "Installing Node.js..."
 bash scripts/install-nodejs.sh
 print_success "Node.js installed"
+
+echo
+print_info "Installing Python packages..."
+bash scripts/install-python-packages.sh
+print_success "Python packages installed"
 
 echo
 print_info "Installing Bun..."
@@ -371,20 +381,24 @@ echo
 echo "Backup manifest: $BACKUP_MANIFEST"
 echo
 echo "Next steps:"
-echo "  1. Restart your terminal:"
+echo "  1. Restart your terminal or launch Kitty:"
+echo "     kitty"
+echo
+echo "  2. Source your bashrc in current terminal:"
 echo "     source ~/.bashrc"
 echo
-echo "  2. Launch Neovim to complete LazyVim setup:"
+echo "  3. Launch Neovim to complete LazyVim setup:"
 echo "     nvim"
 echo
-echo "  3. If you skipped Git configuration:"
+echo "  4. If you skipped Git configuration:"
 echo "     bash scripts/setup-git-user.sh"
 echo
-echo "  4. Test your new environment:"
+echo "  5. Test your new environment:"
 echo "     tmux              # Terminal multiplexer"
 echo "     Ctrl+T            # Find files (FZF)"
 echo "     git aliases       # Show Git shortcuts"
 echo
+echo "Recommended: Use Kitty terminal for best LazyVim experience"
 echo "For help: docs/QUICK_START.md"
 echo "Rollback: ./scripts/rollback.sh"
 echo

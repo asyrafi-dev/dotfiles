@@ -118,12 +118,33 @@ else
   echo "To update npm later: npm install -g npm@latest"
 fi
 
+# Install tree-sitter-cli globally (required by LazyVim)
+echo
+echo "Installing tree-sitter-cli..."
+npm install -g tree-sitter-cli
+echo "tree-sitter-cli installed: $(tree-sitter --version)"
+
+# Install neovim npm package (for Neovim Node.js support)
+echo
+echo "Installing neovim npm package..."
+npm install -g neovim
+echo "neovim npm package installed"
+
+# Install mermaid-cli (for diagram rendering in LazyVim)
+echo
+echo "Installing mermaid-cli..."
+npm install -g @mermaid-js/mermaid-cli
+echo "mermaid-cli installed"
+
 # Final verification
 echo
 echo "Installation complete!"
 echo "================================"
 echo "Node.js version: $(node -v)"
 echo "npm version: $(npm -v)"
+echo "tree-sitter: $(tree-sitter --version)"
+echo "neovim (npm): installed"
+echo "mermaid-cli: installed"
 echo
 echo "Useful commands:"
 echo "  nvm ls                  - List installed versions"
