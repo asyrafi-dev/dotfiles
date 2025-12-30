@@ -106,10 +106,42 @@ else
   fi
 fi
 
+# Helper: detect potential conflicts between home/ and $HOME
+conflicts=()
+for entry in home/*; do
+  [ -e "$entry" ] || continue
+  name=$(basename "$entry")
+  target="$HOME/$name"
+  if [ -e "$target" ] && [ ! -L "$target" ] && [ ! -d "$target" ]; then
+    conflicts+=("$name")
+  fi
+done
+
 if [ "$DRY_RUN" -eq 1 ]; then
   echo "DRY-RUN: would run 'stow' to apply dotfiles (preview):"
   if command -v stow >/dev/null 2>&1; then
-    (cd home && stow -n -t ~ --no-folding -- *)
+    echo "Running stow preview (dry-run), output saved to stow-preview.txt"
+    set +e
+    (cd home && stow -n -t ~ --no-folding -- *) > stow-preview.txt 2>&1
+    stow_status=$?
+    set -e
+    if [ $stow_status -ne 0 ]; then
+      echo "stow preview reported issues. Summary of conflicts (if any):"
+      grep -E "existing target|would remove|ERROR" stow-preview.txt || true
+      if [ ${#conflicts[@]} -gt 0 ]; then
+        echo
+        echo "Detected files that would conflict and need backup or removal:"
+        for c in "${conflicts[@]}"; do
+          echo "  - $HOME/$c"
+        done
+        echo
+        echo "Suggested actions:"
+        echo "  * Move the conflicting files to a backup (the installer will do this automatically in real run if you allow it)."
+        echo "  * Or remove them if you no longer need them."
+      fi
+    else
+      cat stow-preview.txt
+    fi
   else
     echo "DRY-RUN: 'stow' not installed"
   fi
@@ -125,6 +157,37 @@ else
         sudo apt-get install -y stow
       else
         echo "Cannot continue without 'stow'. Exiting."
+        exit 1
+      fi
+    fi
+  fi
+
+  if [ ${#conflicts[@]} -gt 0 ]; then
+    echo "The following existing files will conflict with stow and are not symlinks or directories:"
+    for c in "${conflicts[@]}"; do
+      echo "  - $HOME/$c"
+    done
+    if [ "${ASSUME_YES:-0}" -eq 1 ] || [ -n "${CI:-}" ]; then
+      echo "Backing up conflicting files non-interactively to manifest: $BACKUP_MANIFEST"
+      for c in "${conflicts[@]}"; do
+        src="$HOME/$c"
+        dest="$HOME/$c.dotfiles.bak.$(date +%s)"
+        echo "  -> Backing up $src to $dest"
+        mv "$src" "$dest"
+        echo "$c:$dest" >> "$BACKUP_MANIFEST"
+      done
+    else
+      read -rp "Backup conflicting files now and continue? [y/N] " resp
+      if [[ $resp =~ ^[Yy]$ ]]; then
+        for c in "${conflicts[@]}"; do
+          src="$HOME/$c"
+          dest="$HOME/$c.dotfiles.bak.$(date +%s)"
+          echo "  -> Backing up $src to $dest"
+          mv "$src" "$dest"
+          echo "$c:$dest" >> "$BACKUP_MANIFEST"
+        done
+      else
+        echo "Aborting; resolve conflicts manually and re-run the installer."
         exit 1
       fi
     fi
