@@ -112,6 +112,44 @@ else
 fi
 echo
 
+echo "[7] Checking Node.js and NVM..."
+if [ -d "$HOME/.nvm" ]; then
+  echo "✓ NVM directory exists"
+  export NVM_DIR="$HOME/.nvm"
+  # shellcheck source=/dev/null
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  
+  if command -v nvm >/dev/null 2>&1; then
+    NVM_VERSION=$(nvm --version 2>/dev/null || echo "unknown")
+    echo "✓ NVM installed: v$NVM_VERSION"
+  else
+    echo "⚠ NVM command not available (may need to reload shell)"
+    ((WARNINGS++))
+  fi
+  
+  if command -v node >/dev/null 2>&1; then
+    NODE_VERSION=$(node -v)
+    NPM_VERSION=$(npm -v)
+    echo "✓ Node.js installed: $NODE_VERSION"
+    echo "✓ npm installed: v$NPM_VERSION"
+    
+    # Check if it's the default version (24)
+    NODE_MAJOR=$(echo "$NODE_VERSION" | cut -d'.' -f1 | sed 's/v//')
+    if [ "$NODE_MAJOR" = "24" ]; then
+      echo "✓ Using Node.js 24 (default)"
+    else
+      echo "ℹ Using Node.js $NODE_MAJOR"
+    fi
+  else
+    echo "⚠ Node.js not found (may need to reload shell)"
+    ((WARNINGS++))
+  fi
+else
+  echo "✗ NVM not installed"
+  ((ERRORS++))
+fi
+echo
+
 echo
 echo "Verification Summary"
 echo "===================="
